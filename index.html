@@ -15,6 +15,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,800;1,7..72,400;1,7..72,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+(function(){var d=document.documentElement,c=[];
+ try{if(!(window.CSS&&CSS.supports&&CSS.supports("aspect-ratio","1/1")))c.push("no-ar")}catch(e){c.push("no-ar")}
+ try{var f=document.createElement("div");f.style.display="flex";f.style.flexDirection="column";f.style.rowGap="1px";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));d.appendChild(f);if(f.scrollHeight!==1)c.push("no-fgap");d.removeChild(f)}catch(e){c.push("no-fgap")}
+ if(/Kindle|Silk|KFAPWI|Kobo|eink|BOOX/i.test(navigator.userAgent))c.push("eink");
+ if(c.length)d.className+=(d.className?" ":"")+c.join(" ");})();
+</script>
 <style>
 /* Layout idea: an e-ink reader. One centred "page" per section, greyscale ink on paper,
    a DOWN button turns the page (with a little e-ink refresh flash). One committed world, single theme. */
@@ -57,7 +64,7 @@ a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
   max-width:980px;margin:0 auto;padding:0 20px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey)
 }
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);display:block;margin:0 0 10px;text-align:center}
-h2.title{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48px);line-height:1.08;margin:0 0 8px;text-align:center;text-wrap:balance;letter-spacing:-.01em}
+h2.title{font-family:var(--display);font-weight:800;font-size:30px;font-size:clamp(30px,5vw,48px);line-height:1.08;margin:0 0 8px;text-align:center;text-wrap:balance;letter-spacing:-.01em}
 .sub{text-align:center;color:var(--ink-2);margin:0 auto 28px;max-width:56ch;font-style:italic}
 
 /* ---------- cover ---------- */
@@ -65,8 +72,8 @@ h2.title{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48p
 .swatch{display:flex;justify-content:center;gap:4px;margin:12px 0 0}
 .swatch i{width:18px;height:8px;display:block;border:1px solid var(--ink)}
 .cover .unit{font-family:var(--mono);font-size:12px;letter-spacing:.14em;border:1.5px solid var(--ink);padding:3px 10px;display:inline-block}
-.cover h1{font-family:var(--display);font-weight:800;font-style:italic;font-size:clamp(64px,13vw,148px);line-height:.95;margin:22px 0 14px;letter-spacing:-.03em}
-.cover .role{font-size:clamp(17px,2.2vw,21px);margin:0 auto;max-width:40ch;color:var(--ink-2)}
+.cover h1{font-family:var(--display);font-weight:800;font-style:italic;font-size:64px;font-size:clamp(64px,13vw,148px);line-height:.95;margin:22px 0 14px;letter-spacing:-.03em}
+.cover .role{font-size:17px;font-size:clamp(17px,2.2vw,21px);margin:0 auto;max-width:40ch;color:var(--ink-2)}
 .cover .role .tw{font-weight:800;font-style:italic;border-bottom:3px solid var(--accent)}
 .caret{display:inline-block;width:.5em;height:1.05em;background:var(--ink);vertical-align:-.15em;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
@@ -118,7 +125,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--paper-2);border:1.5p
 
 /* ---------- puzzle ---------- */
 .game{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,1fr);gap:20px;align-items:start}
-#map .title{font-size:clamp(28px,4vw,40px)}
+#map .title{font-size:28px;font-size:clamp(28px,4vw,40px)}
 #map .sub{margin-bottom:16px}
 #map .panel{gap:12px}
 .boardbox{background:var(--ink);padding:12px;border-radius:8px}
@@ -142,7 +149,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--paper-2);border:1.5p
 .cell.packetcell,.cell.furncell{cursor:not-allowed}
 .stoolic{position:absolute;width:62%;max-width:44px;pointer-events:none;filter:saturate(.7)}
 .cell .token{position:relative;z-index:1}
-.token{width:74%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:clamp(10px,1.8vw,15px);border:2px solid var(--ink);pointer-events:none}
+.token{width:74%;height:74%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:10px;font-size:clamp(10px,1.8vw,15px);border:2px solid var(--ink);pointer-events:none}
 .cell.nope .token{animation:nope .45s ease}
 @keyframes nope{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 @media (prefers-reduced-motion:reduce){.cell.nope .token{animation:none;outline:3px dashed var(--accent)}}
@@ -154,7 +161,7 @@ kbd{font-family:var(--mono);font-size:11px;background:var(--paper-2);border:1.5p
 .panel{display:flex;flex-direction:column;gap:16px}
 .suspects{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .sbtn{display:flex;gap:8px;align-items:center;text-align:left;background:var(--paper-2);border:1.5px solid var(--line);border-radius:6px;padding:5px 7px;cursor:pointer;font:inherit;font-size:13px;line-height:1.2;color:var(--ink)}
-.sbtn .token{width:28px;flex:0 0 28px;font-size:10px;border-width:1.5px}
+.sbtn .token{width:28px;height:28px;flex:0 0 28px;font-size:10px;border-width:1.5px}
 .sbtn kbd{margin-left:auto}
 .sbtn[aria-pressed="true"]{border-color:var(--ink);background:#fff;box-shadow:2px 2px 0 var(--ink)}
 .sbtn.placed{opacity:.5}
@@ -178,7 +185,7 @@ ol.clues li::marker{font-family:var(--mono);font-weight:600}
 .files{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .file{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
 .file header{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1.5px solid var(--ink);background:var(--paper)}
-.file header .token{width:34px;flex:0 0 34px;font-size:11px;border-width:1.5px}
+.file header .token{width:34px;height:34px;flex:0 0 34px;font-size:11px;border-width:1.5px}
 .file .alias{font-family:var(--display);font-weight:700;font-style:italic;font-size:16px;line-height:1.15}
 .file .where{font-family:var(--mono);font-size:10px;color:var(--grey);letter-spacing:.06em;text-transform:uppercase}
 .file .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
@@ -233,7 +240,7 @@ dl.facts dd{margin:0}
 .rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:20}
 .rail a{width:10px;height:10px;border:1.5px solid var(--ink);border-radius:2px;display:block;background:var(--paper)}
 .rail a[aria-current="true"]{background:var(--ink)}
-.flash{position:fixed;inset:0;background:var(--ink);opacity:0;pointer-events:none;z-index:30}
+.flash{position:fixed;top:0;right:0;bottom:0;left:0;background:var(--ink);opacity:0;pointer-events:none;z-index:30}
 .flash.go{animation:refresh .22s steps(2,end)}
 @keyframes refresh{0%{opacity:.9}50%{opacity:.9;background:var(--paper)}100%{opacity:0}}
 
@@ -241,7 +248,7 @@ dl.facts dd{margin:0}
 .kbtn{font:inherit;font-family:var(--mono);font-size:12px;background:var(--paper-2);border:1.5px solid var(--ink);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--ink);display:inline-flex;gap:4px;align-items:center}
 .turner .kbtn{box-shadow:0 0 0 4px var(--paper)}
 .kbhint{margin:-18px 0 30px}
-.pal-back{position:fixed;inset:0;background:rgba(235,233,227,.82);z-index:40;display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 16px}
+.pal-back{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(235,233,227,.82);z-index:40;display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 16px}
 .pal-back[hidden]{display:none}
 .palette{width:100%;max-width:520px;background:var(--paper-2);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
 .pal-top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1.5px solid var(--ink)}
@@ -321,6 +328,25 @@ dl.facts dd{margin:0}
   .boardbox{max-width:430px}
   ol.clues{font-size:13.5px;gap:4px}
 }
+
+/* ---------- older browsers (e-readers) ---------- */
+.no-fgap .turner>*+*,.no-fgap .pins>*+*,.no-fgap .boardhead>*+*,.no-fgap .titlebar>*+*,.no-fgap .kbtn>*+*,.no-fgap .pin>*+*,.no-fgap .sbtn>*+*,.no-fgap .file header>*+*{margin-left:8px}
+.no-fgap .chips>*,.no-fgap .tags>*,.no-fgap .legend>*,.no-fgap .actions>*{margin:0 6px 6px 0}
+.no-fgap .titlebar .dots i+i{margin-left:5px}
+.no-fgap .panel>*+*{margin-top:16px}
+.no-fgap .file .body>*+*{margin-top:8px}
+.no-fgap .cover .toc a>*+*{margin-left:12px}
+.no-ar .board{height:auto}
+.no-ar .sbtn .token,.no-ar .file header .token{display:inline-block;line-height:26px;text-align:center}
+/* e-ink mode: no snapping, no flashing, no floating rail, plain page flow */
+.eink html,html.eink{scroll-snap-type:none;scroll-behavior:auto}
+.eink .page{min-height:0;padding-top:56px;padding-bottom:72px;display:block}
+.eink .inner{margin:0 auto}
+.eink .rail,.eink .flash{display:none}
+.eink *{animation:none!important;transition:none!important}
+.eink .turner{position:static;transform:none;justify-content:center;margin:0 auto 24px;width:max-content}
+.eink .caret{display:none}
+.eink .board{max-width:520px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.flash.go{animation:none}}
 </style>
 </head>
@@ -826,7 +852,12 @@ window.I18N={"en":{"_name":"English","unit":"CASE FILE · PRODUCT MANAGER","lang
   helpback.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();closeHelp()}});
   window.addEventListener("scroll",()=>{if(!helpShown&&!isSolved&&currentPage()===2){helpShown=true;setTimeout(()=>{if(currentPage()===2)openHelp()},450)}},{passive:true});
 
-  buildBoard();setLang(lang);
+  function squareBoard(){
+    if(!document.documentElement.classList.contains("no-ar"))return;
+    const w=board.getBoundingClientRect().width;board.style.height=w+"px";
+  }
+  window.addEventListener("resize",squareBoard);
+  buildBoard();setLang(lang);squareBoard();setTimeout(squareBoard,300);
 })();
 </script>
 </body>
