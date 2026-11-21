@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Chope'd the Table?</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%2248%22%20height%3D%2258%22%20rx%3D%2214%22%20fill%3D%22%23efc7bc%22%20stroke%3D%22%23151515%22%20stroke-width%3D%224%22/%3E%3Crect%20x%3D%2215%22%20y%3D%2210%22%20width%3D%2234%22%20height%3D%2234%22%20rx%3D%228%22%20fill%3D%22%23fbf9f4%22%20stroke%3D%22%23151515%22%20stroke-width%3D%223%22/%3E%3Cpath%20d%3D%22M21%2025q3.5-4.5%207%200M36%2025q3.5-4.5%207%200%22%20fill%3D%22none%22%20stroke%3D%22%23151515%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%2221.5%22%20cy%3D%2232%22%20r%3D%223%22%20fill%3D%22%23ec9c8e%22/%3E%3Ccircle%20cx%3D%2242.5%22%20cy%3D%2232%22%20r%3D%223%22%20fill%3D%22%23ec9c8e%22/%3E%3Cpath%20d%3D%22M28.5%2032.5q3.5%203.5%207%200%22%20fill%3D%22none%22%20stroke%3D%22%23151515%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2252%22%20r%3D%223.2%22%20fill%3D%22%23fbf9f4%22%20stroke%3D%22%23151515%22%20stroke-width%3D%222.5%22/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#ebe9e3">
+<meta name="description" content="J builds products in payments, AI and more. Solve a little logic puzzle to find out where she is now.">
+<meta property="og:title" content="Who chope'd the table?">
+<meta property="og:description" content="A little logic puzzle in J's little internet space.">
+<meta property="og:image" content="https://j.oatlab.dev/icon-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,800;1,7..72,400;1,7..72,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: an e-ink reader. One centred "page" per section, greyscale ink on paper,
+   a DOWN button turns the page (with a little e-ink refresh flash). One committed world, single theme. */
+:root{
+  --paper:#ebe9e3;
+  --paper-2:#f6f5f1;
+  --line:#c9c6be;
+  --ink:#151515;
+  --ink-2:#3b3a37;
+  --grey:#75736d;
+  --accent:#b4533a;   /* colour e-ink: washed-out, dithered colours on paper */
+  --display:"Literata", Georgia, "Times New Roman", serif;
+  --body:"Literata", Georgia, serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+html,body{margin:0}
+body{
+  background:var(--paper);
+  background-image:radial-gradient(rgba(0,0,0,.05) 1px, transparent 1.2px);
+  background-size:5px 5px;
+  color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+}
+a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
+:focus-visible{outline:2px dashed var(--ink);outline-offset:3px}
+
+/* ---------- pages ---------- */
+.page{
+  min-height:100vh;min-height:100dvh;scroll-snap-align:start;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:64px 20px 96px;position:relative;
+}
+.page + .page{border-top:1px solid var(--line)}
+.inner{width:100%;max-width:980px}
+.narrow{max-width:680px}
+.runhead{
+  position:absolute;top:18px;left:0;right:0;display:flex;justify-content:space-between;
+  max-width:980px;margin:0 auto;padding:0 20px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey)
+}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);display:block;margin:0 0 10px;text-align:center}
+h2.title{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48px);line-height:1.08;margin:0 0 8px;text-align:center;text-wrap:balance;letter-spacing:-.01em}
+.sub{text-align:center;color:var(--ink-2);margin:0 auto 28px;max-width:56ch;font-style:italic}
+
+/* ---------- cover ---------- */
+.cover{text-align:center}
+.swatch{display:flex;justify-content:center;gap:4px;margin:12px 0 0}
+.swatch i{width:18px;height:8px;display:block;border:1px solid var(--ink)}
+.cover .unit{font-family:var(--mono);font-size:12px;letter-spacing:.14em;border:1.5px solid var(--ink);padding:3px 10px;display:inline-block}
+.cover h1{font-family:var(--display);font-weight:800;font-style:italic;font-size:clamp(64px,13vw,148px);line-height:.95;margin:22px 0 14px;letter-spacing:-.03em}
+.cover .role{font-size:clamp(17px,2.2vw,21px);margin:0 auto;max-width:40ch;color:var(--ink-2)}
+.cover .role .tw{font-weight:800;font-style:italic;border-bottom:3px solid var(--accent)}
+.caret{display:inline-block;width:.5em;height:1.05em;background:var(--ink);vertical-align:-.15em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.pins{display:flex;justify-content:center;gap:18px;margin:14px 0 0;font-family:var(--mono);font-size:14px;font-weight:600}
+.pin{display:inline-flex;align-items:center;gap:4px}
+.pin svg{width:20px;height:20px;filter:saturate(.8)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto;padding-top:4px}
+.tags span{font-family:var(--mono);font-size:10.5px;background:var(--paper);border:1px dashed var(--grey);padding:0 6px;border-radius:3px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
+.bot{display:inline-flex;align-items:center;gap:6px;cursor:default;position:relative}
+.bot svg{width:22px;height:27px;animation:bob 2.6s ease-in-out infinite;overflow:visible}
+.bot .spark{transform-origin:22px 5px;animation:twinkle 2.2s ease-in-out infinite}
+.bot-say{font-family:var(--mono);font-size:10px;opacity:0;transition:opacity .2s;text-transform:none;letter-spacing:0}
+.bot .heart{position:absolute;left:5px;top:-4px;color:#e0877a;font-size:12px;opacity:0;pointer-events:none}
+.bot:hover .bot-say{opacity:1}
+.bot:hover .heart{animation:float 1.2s ease-out infinite}
+@keyframes bob{50%{transform:translateY(-2px) rotate(-3deg)}}
+@keyframes twinkle{0%,100%{transform:scale(.4);opacity:.3}50%{transform:scale(1.2);opacity:1}}
+@keyframes float{0%{opacity:0;transform:translateY(4px)}30%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+@media (prefers-reduced-motion:reduce){.bot svg,.bot .spark,.bot:hover .heart{animation:none}}
+.cover .tag{font-family:var(--mono);font-size:12px;letter-spacing:.2em;margin:16px 0 34px;color:var(--grey)}
+.toc{list-style:none;margin:0 auto;padding:0;max-width:420px;text-align:left;border-top:1.5px solid var(--ink)}
+.toc li{border-bottom:1px solid var(--line)}
+.toc a{display:flex;gap:14px;padding:9px 2px;text-decoration:none;font-size:16px}
+.toc a:hover{background:var(--paper-2)}
+.toc .n{font-family:var(--mono);font-size:12px;color:var(--grey);padding-top:3px;min-width:22px}
+.toc .dots{flex:1;border-bottom:1.5px dotted var(--line);margin-bottom:7px}
+.toc .pg{font-family:var(--mono);font-size:12px;color:var(--grey);padding-top:3px}
+
+/* ---------- windows (geeky chrome) ---------- */
+.card{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:8px;padding:16px 18px;box-shadow:3px 3px 0 var(--ink)}
+.card h3{font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}
+.titlebar{display:flex;align-items:center;gap:10px;margin:-16px -18px 14px;padding:6px 12px;border-bottom:1.5px solid var(--ink);background:var(--paper);border-radius:7px 7px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--grey)}
+.titlebar .dots{display:flex;gap:5px}
+.titlebar .dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);display:block}
+.titlebar .dots i:first-child{background:var(--ink)}
+.titlebar .fn{flex:1}
+kbd{font-family:var(--mono);font-size:11px;background:var(--paper-2);border:1.5px solid var(--ink);border-bottom-width:3px;border-radius:4px;padding:0 5px;line-height:1.5;display:inline-block;color:var(--ink)}
+
+/* ---------- the case ---------- */
+.story p{margin:0 0 14px}
+.story .drop::first-letter{font-family:var(--display);font-weight:800;float:left;font-size:3.4em;line-height:.85;padding:6px 8px 0 0}
+.steps{margin:0;padding-left:24px;display:grid;gap:8px;font-size:16px}
+.steps li::marker{font-family:var(--mono);font-weight:600}
+.skip{display:block;text-align:center;margin-top:22px;font-family:var(--mono);font-size:13px}
+
+/* ---------- puzzle ---------- */
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,1fr);gap:20px;align-items:start}
+#map .title{font-size:clamp(28px,4vw,40px)}
+#map .sub{margin-bottom:16px}
+#map .panel{gap:12px}
+.boardbox{background:var(--ink);padding:12px;border-radius:8px}
+.boardhead{display:flex;justify-content:space-between;color:var(--paper);font-family:var(--mono);font-size:11px;letter-spacing:.1em;margin:0 2px 8px}
+.board{display:grid;grid-template-columns:20px repeat(6,1fr);grid-template-rows:20px repeat(6,1fr);aspect-ratio:1/1;max-width:470px;margin:0 auto}
+.lbl{display:flex;align-items:center;justify-content:center;color:#a9a7a0;font-family:var(--mono);font-size:11px}
+.cell{position:relative;border:1px solid rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;cursor:pointer;font:inherit;padding:0;min-width:0;color:var(--ink)}
+.cell:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.cell.bt{border-top:3px solid var(--ink)}.cell.bb{border-bottom:3px solid var(--ink)}
+.cell.bl{border-left:3px solid var(--ink)}.cell.br{border-right:3px solid var(--ink)}
+.z-K{background:radial-gradient(rgba(0,0,0,.13) 1px, transparent 1.4px) 0 0/6px 6px,#d3bea2}
+.z-C{background:radial-gradient(rgba(0,0,0,.13) 1px, transparent 1.4px) 0 0/6px 6px,#e2d293}
+.z-S{background:radial-gradient(rgba(0,0,0,.13) 1px, transparent 1.4px) 0 0/6px 6px,#dba58d}
+.z-D{background:radial-gradient(rgba(0,0,0,.13) 1px, transparent 1.4px) 0 0/6px 6px,#bfc9a0}
+.z-T{background:var(--paper-2)}
+.z-V{background:repeating-linear-gradient(100deg,transparent 0 7px,rgba(255,255,255,.35) 7px 8px),radial-gradient(rgba(0,0,0,.13) 1px, transparent 1.4px) 0 0/6px 6px,#aebfce}
+.zname{position:absolute;top:2px;left:2px;font-family:var(--mono);font-size:8.5px;line-height:1.15;text-transform:uppercase;letter-spacing:.04em;background:var(--paper-2);border:1px solid var(--ink);padding:1px 3px;pointer-events:none;text-align:left;z-index:1}
+.zname .h{color:var(--grey)}
+.mark{font-family:var(--mono);font-size:22px;color:rgba(0,0,0,.45);pointer-events:none}
+.packet,.furn{pointer-events:none;width:64%;max-width:48px;filter:saturate(.6) contrast(.95)}
+.cell.packetcell,.cell.furncell{cursor:not-allowed}
+.stoolic{position:absolute;width:62%;max-width:44px;pointer-events:none;filter:saturate(.7)}
+.cell .token{position:relative;z-index:1}
+.token{width:74%;aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:clamp(10px,1.8vw,15px);border:2px solid var(--ink);pointer-events:none}
+.cell.nope .token{animation:nope .45s ease}
+@keyframes nope{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.cell.nope .token{animation:none;outline:3px dashed var(--accent)}}
+.cell.clash .token{outline:3px dashed var(--accent);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--grey);justify-content:center}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend svg{width:20px;height:20px;filter:saturate(.6) contrast(.95)}
+
+.panel{display:flex;flex-direction:column;gap:16px}
+.suspects{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sbtn{display:flex;gap:8px;align-items:center;text-align:left;background:var(--paper-2);border:1.5px solid var(--line);border-radius:6px;padding:5px 7px;cursor:pointer;font:inherit;font-size:13px;line-height:1.2;color:var(--ink)}
+.sbtn .token{width:28px;flex:0 0 28px;font-size:10px;border-width:1.5px}
+.sbtn kbd{margin-left:auto}
+.sbtn[aria-pressed="true"]{border-color:var(--ink);background:#fff;box-shadow:2px 2px 0 var(--ink)}
+.sbtn.placed{opacity:.5}
+.hint{font-size:13px;color:var(--grey);margin:8px 0 0;font-family:var(--mono)}
+ol.clues{margin:0;padding-left:20px;font-size:14.5px;display:grid;gap:6px;line-height:1.45}
+ol.clues li::marker{font-family:var(--mono);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font-family:var(--mono);font-weight:600;font-size:13px;border:1.5px solid var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer;background:var(--paper-2);color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn.primary{background:var(--ink);color:var(--paper-2)}
+.status{font-family:var(--mono);font-size:13px;min-height:1.4em;margin:10px 0 0;font-weight:600}
+.status.bad{color:var(--accent)}
+
+/* ---------- case files ---------- */
+.verdict{border:1.5px solid var(--ink);background:var(--paper-2);padding:14px 18px;margin:0 auto 22px;max-width:720px;text-align:center;border-radius:8px}
+.verdict .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+.verdict p{margin:4px 0 0}
+.redact{background:var(--ink);color:var(--ink);border-radius:2px;padding:0 4px;user-select:none}
+.verdict.solved{border-color:var(--accent);box-shadow:3px 3px 0 var(--accent)}
+.verdict.solved .k{color:var(--accent)}
+.files{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.file{background:var(--paper-2);border:1.5px solid var(--ink);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+.file header{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1.5px solid var(--ink);background:var(--paper)}
+.file header .token{width:34px;flex:0 0 34px;font-size:11px;border-width:1.5px}
+.file .alias{font-family:var(--display);font-weight:700;font-style:italic;font-size:16px;line-height:1.15}
+.file .where{font-family:var(--mono);font-size:10px;color:var(--grey);letter-spacing:.06em;text-transform:uppercase}
+.file .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.file .co{font-weight:800;font-size:17px;margin:0;display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ind{font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ink);padding:1px 6px;border-radius:999px;white-space:nowrap}
+.fo{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;margin:0;font-size:14.5px;line-height:1.45}
+.fo dt{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);padding-top:3px}
+.fo dd{margin:0}
+.stat{font-family:var(--mono);font-weight:600;font-size:.92em;border-bottom:2px solid var(--ink);white-space:nowrap}
+.file.current{border-color:var(--accent);box-shadow:3px 3px 0 var(--accent)}
+.file.current .ind{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- about ---------- */
+.stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stamp{border:1.5px dashed var(--ink);border-radius:10px;padding:14px 16px;background:var(--paper-2);text-align:center}
+.stamp .city{font-family:var(--display);font-weight:800;font-size:20px;margin:0}
+.stamp:nth-child(1) .when{background:#e8bfb2}.stamp:nth-child(2) .when{background:#bccad8}.stamp:nth-child(3) .when{background:#e5d79c}
+.stamp .when{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:999px;padding:1px 8px;display:inline-block;margin:6px 0 8px}
+.stamp p{margin:0;font-size:15px;line-height:1.45}
+.stamp .say{font-family:var(--mono);font-size:11px;color:var(--grey);margin-top:8px;display:block}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:16px}
+dl.facts dt{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);padding-top:4px}
+dl.facts dd{margin:0}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.about-grid p{margin:0 0 8px}
+
+/* ---------- evidence ---------- */
+.ev-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:stretch}
+.sub code{font-family:var(--mono);font-style:normal;font-size:.85em;background:var(--ink);color:var(--paper-2);padding:1px 6px;border-radius:4px}
+.term pre{min-height:150px}
+.evidence{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.evidence h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px;color:var(--grey);font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--ink);padding:2px 8px;border-radius:999px}
+.chip.n{background:#c4d4d0}
+.edu{display:grid;gap:8px;margin:0;padding:0;list-style:none;font-size:15px}
+.edu li{display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:6px}
+.edu li span{font-family:var(--mono);font-size:11.5px;color:var(--grey);white-space:nowrap}
+.term{background:var(--ink);color:#e9e7e1;font-family:var(--mono);font-size:13px;border-radius:8px;border:1.5px solid var(--ink);padding:0 0 12px;overflow:hidden}
+.term .titlebar{margin:0 0 10px;background:#2a2a28;color:#a9a7a0;border-color:#000}
+.term .titlebar .dots i{border-color:#a9a7a0}.term .titlebar .dots i:first-child{background:#a9a7a0}
+.term pre{margin:0;padding:0 16px;white-space:pre-wrap;line-height:1.6;max-height:280px;overflow:auto}
+.term .pr{color:#fff;font-weight:600}
+.term input{background:transparent;border:0;color:#fff;font:inherit;width:70%;outline:none;caret-color:#fff}
+.term .line{padding:0 16px;display:flex;gap:8px}
+.end{margin-top:26px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--grey);letter-spacing:.08em}
+
+/* ---------- page turner ---------- */
+.turner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:20;display:flex;gap:10px;align-items:center}
+.down{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.14em;background:var(--ink);color:var(--paper-2);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;box-shadow:0 0 0 4px var(--paper)}
+.pageno{font-family:var(--mono);font-size:11px;color:var(--grey);background:var(--paper);padding:3px 8px;border-radius:999px;border:1px solid var(--line)}
+.rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:20}
+.rail a{width:10px;height:10px;border:1.5px solid var(--ink);border-radius:2px;display:block;background:var(--paper)}
+.rail a[aria-current="true"]{background:var(--ink)}
+.flash{position:fixed;inset:0;background:var(--ink);opacity:0;pointer-events:none;z-index:30}
+.flash.go{animation:refresh .22s steps(2,end)}
+@keyframes refresh{0%{opacity:.9}50%{opacity:.9;background:var(--paper)}100%{opacity:0}}
+
+/* ---------- command palette ---------- */
+.kbtn{font:inherit;font-family:var(--mono);font-size:12px;background:var(--paper-2);border:1.5px solid var(--ink);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--ink);display:inline-flex;gap:4px;align-items:center}
+.turner .kbtn{box-shadow:0 0 0 4px var(--paper)}
+.kbhint{margin:-18px 0 30px}
+.pal-back{position:fixed;inset:0;background:rgba(235,233,227,.82);z-index:40;display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 16px}
+.pal-back[hidden]{display:none}
+.palette{width:100%;max-width:520px;background:var(--paper-2);border:1.5px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.pal-top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1.5px solid var(--ink)}
+.pal-top input{flex:1;border:0;background:transparent;font-family:var(--mono);font-size:15px;outline:none;color:var(--ink)}
+.pal-list{list-style:none;margin:0;padding:6px;max-height:50vh;overflow:auto}
+.pal-group{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding:8px 10px 4px}
+.pal-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:15px}
+.pal-item small{font-family:var(--mono);font-size:11px;color:var(--grey)}
+.pal-item[aria-selected="true"]{background:var(--ink);color:var(--paper-2)}
+.pal-item[aria-selected="true"] small{color:#bdbbb4}
+.playrow{text-align:center;margin:22px 0 0}
+.qbtn{font-family:var(--mono);font-weight:600;font-size:11px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--paper);background:transparent;color:var(--paper);cursor:pointer;padding:0;line-height:1;margin-left:8px}
+.boardhead{align-items:center}.boardhead #count{margin-left:auto}
+.help{max-width:440px;padding:0 20px 20px;text-align:center}
+.help .titlebar{margin:0 -20px 16px}
+.help h3{font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 14px}
+.hsteps{list-style:none;margin:0 0 10px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;counter-reset:h}
+.hsteps li{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px;line-height:1.35;counter-increment:h}
+.hsteps li::before{content:counter(h);font-family:var(--mono);font-size:11px;color:var(--grey)}
+.hsteps svg{width:100%;max-width:90px;filter:saturate(.8)}
+.hnote{font-family:var(--mono);font-size:12px;color:var(--grey);margin:4px 0 14px}
+
+.pal-item .on{font-family:var(--mono);font-size:11px}
+@media (max-width:900px){
+  .game,.about-grid,.ev-grid{grid-template-columns:1fr}
+  .files{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  .files,.stamps{grid-template-columns:1fr}
+  .suspects,.evidence{grid-template-columns:1fr}
+  .rail{display:none}
+  .zname{font-size:7px}
+}
+
+/* ---------- responsive ---------- */
+.touchonly{display:none}
+.kbonly{display:inline-flex;gap:3px;align-items:center}
+.kbtn{gap:7px}
+.down,.pageno,.kbtn{white-space:nowrap}
+.boardbox{max-width:560px;margin:0 auto}
+.legend{max-width:560px;margin-left:auto;margin-right:auto}
+@media (hover:none){
+  .kbonly,.sbtn kbd{display:none}
+  .touchonly{display:inline}
+}
+@media (max-width:1180px){.rail{display:none}}
+@media (max-width:900px){
+  .game{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+  .game>div:first-child,.panel>.card{width:100%;max-width:560px;margin-left:auto;margin-right:auto}
+  .game>div:first-child{order:2;width:100%}
+  .panel{display:contents}
+  .panel>.card:nth-child(1){order:1}
+  .panel>.card:nth-child(2){order:4}
+  .panel>.card:nth-child(3){order:3}
+}
+@media (max-width:640px){
+  .page{padding:52px 14px 92px}
+  .runhead{padding:0 14px}
+  .suspects{grid-template-columns:repeat(3,1fr);gap:6px}
+  .sbtn{flex-direction:column;text-align:center;gap:4px;padding:6px 4px;font-size:11.5px}
+  .sbtn .token{width:30px;flex-basis:auto}
+  .boardbox{padding:8px}
+  .board{grid-template-columns:16px repeat(6,1fr);grid-template-rows:16px repeat(6,1fr)}
+  .zname{font-size:6.5px;padding:0 2px}
+  .down{padding:9px 16px;font-size:12px}
+  .turner{bottom:12px;gap:6px}
+  .hsteps li{font-size:12.5px}
+  .card{padding:14px}
+  .titlebar{margin:-14px -14px 12px}
+}
+@media (max-width:340px){.hsteps{grid-template-columns:1fr}.suspects{grid-template-columns:1fr 1fr}}
+@media (min-width:901px) and (max-height:800px){
+  .page{padding-top:46px;padding-bottom:80px}
+  #map .title{font-size:30px}
+  #map .eyebrow{margin-bottom:4px}
+  .board{max-width:400px}
+  .boardbox{max-width:430px}
+  ol.clues{font-size:13.5px;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.flash.go{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- 00 COVER -->
+<section class="page cover" id="cover" aria-label="Cover">
+  <div class="runhead"><span>SG · UK · DE</span><span class="bot" title="hi!"><span class="heart" aria-hidden="true">♥</span><svg viewBox="0 0 26 32" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="29" rx="6.5" fill="#efc7bc" stroke="#151515" stroke-width="1.4"/><rect class="scr" x="5" y="5" width="16" height="18" rx="3.5" fill="#fbf9f4" stroke="#151515" stroke-width="1.1"/><g class="face"><path d="M8.3 12.6q1.4-1.9 2.8 0M14.9 12.6q1.4-1.9 2.8 0" fill="none" stroke="#151515" stroke-width="1.2" stroke-linecap="round"/><circle cx="8.4" cy="15.6" r="1.4" fill="#ec9c8e"/><circle cx="17.6" cy="15.6" r="1.4" fill="#ec9c8e"/><path d="M11.6 15.8q1.4 1.5 2.8 0" fill="none" stroke="#151515" stroke-width="1.2" stroke-linecap="round"/></g><circle cx="13" cy="26.8" r="1.4" fill="#fbf9f4" stroke="#151515" stroke-width="1"/><path class="spark" d="M22 3.2l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#e2c45a"/></svg><span class="bot-say">hi!</span></span></div>
+  <div class="inner narrow">
+    <span class="unit" data-i18n="unit"></span>
+    <div class="swatch" aria-hidden="true"><i style="background:#d3bea2"></i><i style="background:#e2d293"></i><i style="background:#dba58d"></i><i style="background:#bfc9a0"></i><i style="background:#aebfce"></i><i style="background:#c4d4d0"></i></div>
+    <h1>Jelissa</h1>
+    <p class="role" aria-live="off"><span id="twpre"></span><b class="tw" id="tw"></b><span class="caret" aria-hidden="true"></span><span id="twsuf"></span></p>
+    <p class="pins" aria-label="Locations: Singapore, United Kingdom, Germany"><span class="pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z" fill="#dba58d" stroke="#151515" stroke-width="1.5"/><circle cx="12" cy="10" r="2.6" fill="#f6f5f1" stroke="#151515" stroke-width="1"/></svg>SG</span><span class="pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z" fill="#aebfce" stroke="#151515" stroke-width="1.5"/><circle cx="12" cy="10" r="2.6" fill="#f6f5f1" stroke="#151515" stroke-width="1"/></svg>UK</span><span class="pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z" fill="#e2d293" stroke="#151515" stroke-width="1.5"/><circle cx="12" cy="10" r="2.6" fill="#f6f5f1" stroke="#151515" stroke-width="1"/></svg>DE</span></p>
+    <p class="tag">SHIOK · WUNDERBAR · LOVELY</p>
+    <p class="kbhint"><button class="kbtn" type="button" data-open-palette><span class="kbonly"><kbd>⌘</kbd><kbd>K</kbd></span><span class="touchonly" aria-hidden="true">文A</span> <span data-i18n="langbtn"></span></button></p>
+    <ol class="toc">
+      <li><a href="#case"><span class="n">01</span><span data-i18n="toc1"></span><span class="dots"></span><span class="pg">p.1</span></a></li>
+      <li><a href="#map"><span class="n">02</span><span data-i18n="toc2"></span><span class="dots"></span><span class="pg">p.2</span></a></li>
+      <li><a href="#files"><span class="n">03</span><span data-i18n="toc3"></span><span class="dots"></span><span class="pg">p.3</span></a></li>
+      <li><a href="#about"><span class="n">04</span><span data-i18n="toc4"></span><span class="dots"></span><span class="pg">p.4</span></a></li>
+      <li><a href="#evidence"><span class="n">05</span><span data-i18n="toc5"></span><span class="dots"></span><span class="pg">p.5</span></a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 01 THE CASE -->
+<section class="page" id="case" aria-labelledby="case-title">
+  <div class="runhead"><span>01 · <span data-i18n="toc1s"></span></span><span>p.1</span></div>
+  <div class="inner narrow">
+    <span class="eyebrow" data-chap="01"></span>
+    <h2 class="title" id="case-title" data-i18n="case_t"></h2>
+    <p class="sub" data-i18n="case_s"></p>
+    <div class="story">
+      <p class="drop" data-i18n="story1"></p>
+      <p data-i18n="story2"></p>
+    </div>
+    <p class="playrow"><button class="btn primary" type="button" data-help><span data-i18n="hp_btn"></span> ?</button></p>
+    <a class="skip" href="#files" data-i18n="skip"></a>
+  </div>
+</section>
+
+<!-- 02 THE MAP -->
+<section class="page" id="map" aria-labelledby="map-title">
+  <div class="runhead"><span>02 · <span data-i18n="toc2s"></span></span><span>p.2</span></div>
+  <div class="inner">
+    <span class="eyebrow" data-chap="02"></span>
+    <h2 class="title" id="map-title" data-i18n="map_t"></h2>
+    <p class="sub" data-i18n="map_s"></p>
+    <div class="game">
+      <div>
+        <div class="boardbox">
+          <div class="boardhead"><span id="count">0 / 6 SEATED</span><button class="qbtn" type="button" data-help aria-label="How to play">?</button></div>
+          <div class="board" id="board" role="grid" aria-label="Food hall floor plan, 6 by 6"></div>
+        </div>
+        <div class="legend" id="legend" aria-label="Furniture on the map"></div>
+      </div>
+      <div class="panel">
+        <div class="card" data-win="suspects.app">
+          <h3 data-i18n="sh1"></h3>
+          <div class="suspects" id="suspects"></div>
+          <p class="hint" id="pickhint"></p>
+        </div>
+        <div class="card" data-win="witness_statements.txt">
+          <h3 data-i18n="sh2"></h3>
+          <ol class="clues"><li data-i18n="clue1"></li><li data-i18n="clue2"></li><li data-i18n="clue3"></li><li data-i18n="clue4"></li><li data-i18n="clue5"></li><li data-i18n="clue6"></li></ol>
+        </div>
+        <div class="card" data-win="check.sh">
+          <h3 data-i18n="sh3"></h3>
+          <div class="actions">
+            <button class="btn primary" id="check" type="button" data-i18n="b_check"></button>
+            <button class="btn" id="reset" type="button" data-i18n="b_clear"></button>
+            <button class="btn" id="reveal" type="button" data-i18n="b_reveal"></button>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 CASE FILES -->
+<section class="page" id="files" aria-labelledby="files-title">
+  <div class="runhead"><span>03 · <span data-i18n="toc3s"></span></span><span>p.3</span></div>
+  <div class="inner">
+    <span class="eyebrow" data-chap="03"></span>
+    <h2 class="title" id="files-title" data-i18n="files_t"></h2>
+    <p class="sub" data-i18n="files_s"></p>
+    <div class="verdict" id="verdict" role="region" aria-live="polite">
+      <span class="k" id="vk"></span>
+      <p id="vt"></p>
+    </div>
+    <div class="files" id="filelist"></div>
+  </div>
+</section>
+
+<!-- 04 ABOUT -->
+<section class="page" id="about" aria-labelledby="about-title">
+  <div class="runhead"><span>04 · <span data-i18n="toc4s"></span></span><span>p.4</span></div>
+  <div class="inner">
+    <span class="eyebrow" data-chap="04"></span>
+    <h2 class="title" id="about-title" data-i18n="about_t"></h2>
+    <p class="sub" data-i18n="about_s"></p>
+    <div class="stamps"><div class="stamp"><p class="city" data-i18n="sg_c"></p><span class="when" data-i18n="sg_w"></span><p data-i18n="sg_p"></p><span class="say" data-i18n="sg_s"></span></div><div class="stamp"><p class="city" data-i18n="uk_c"></p><span class="when" data-i18n="uk_w"></span><p data-i18n="uk_p"></p><span class="say" data-i18n="uk_s"></span></div><div class="stamp"><p class="city" data-i18n="de_c"></p><span class="when" data-i18n="de_w"></span><p data-i18n="de_p"></p><span class="say" data-i18n="de_s"></span></div></div>
+    <div class="about-grid">
+      <div class="card" data-win="README.md">
+        <h3 data-i18n="prof_h"></h3>
+        <p data-i18n="prof1"></p>
+        <p data-i18n="prof2"></p>
+      </div>
+      <div class="card" data-win="whoami.json">
+        <h3 data-i18n="det_h"></h3>
+        <dl class="facts"><dt data-i18n="dt_sp"></dt><dd data-i18n="speaks"></dd><dt data-i18n="dt_path"></dt><dd data-i18n="path"></dd><dt data-i18n="dt_off"></dt><dd data-i18n="off"></dd><dt data-i18n="dt_like"></dt><dd data-i18n="likes"></dd></dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 EVIDENCE -->
+<section class="page" id="evidence" aria-labelledby="ev-title">
+  <div class="runhead"><span>05 · <span data-i18n="toc5s"></span></span><span>p.5</span></div>
+  <div class="inner">
+    <span class="eyebrow" data-chap="05"></span>
+    <h2 class="title" id="ev-title" data-i18n="toc5s"></h2>
+    <p class="sub" data-i18n="ev_s"></p>
+    <div class="ev-grid">
+      <div class="card" data-win="education.log">
+        <h3 data-i18n="rap_h"></h3>
+        <ul class="edu">
+          <li>MBA · Quantic <span>2021–22</span></li>
+          <li>M.S. Information Systems · NTU <span>2020–22</span></li>
+          <li>Diploma, UX &amp; Digital Product Design · Singapore Polytechnic <span>2019–20</span></li>
+          <li>B.A. (Hons) Psychology · NTU <span>2013–17</span></li>
+        </ul>
+      </div>
+      <div class="term" aria-label="Terminal">
+      <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="fn">j@oatlab: ~</span><span>try: stack</span></div>
+      <pre id="termout"><span class="pr">$</span> whoami
+jelissa: builds products in payments, payroll, logistics and AI. SG and UK, sometimes DE.
+</pre>
+      <form class="line" id="termform"><label for="termin" class="pr">$</label><input id="termin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type stack, help…"></form>
+    </div>
+    </div>
+    <p class="end" data-i18n="end"></p>
+  </div>
+</section>
+
+<nav class="rail" id="rail" aria-label="Pages"></nav>
+<div class="turner"><button class="kbtn" type="button" data-open-palette aria-label="Change language or jump to a page"><span class="kbonly"><kbd>⌘K</kbd></span><span class="touchonly">文A</span></button><button class="down" id="down" type="button">DOWN ↓</button><span class="pageno" id="pageno">0 / 5</span></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="pal-back" id="helpback" hidden>
+  <div class="palette help" role="dialog" aria-modal="true" aria-labelledby="hp-t">
+    <div class="titlebar"><span class="dots"><i></i><i></i><i></i></span><span class="fn">how_to_play.md</span></div>
+    <h3 id="hp-t" data-i18n="hp_t"></h3>
+    <ol class="hsteps">
+      <li><svg viewBox="0 0 60 44" aria-hidden="true"><circle cx="20" cy="22" r="11" fill="#d3bea2" stroke="#151515" stroke-width="1.5"/><text x="20" y="25.5" font-size="8" text-anchor="middle" font-family="monospace" font-weight="700">KS</text><path d="M34 26l0 12 3-3 3 5 2-1-3-5h4z" fill="#fff" stroke="#151515" stroke-width="1.3" stroke-linejoin="round"/></svg><span data-i18n="hp1"></span></li>
+      <li><svg viewBox="0 0 60 44" aria-hidden="true"><g fill="#f6f5f1" stroke="#151515" stroke-width="1"><rect x="14" y="4" width="12" height="12"/><rect x="26" y="4" width="12" height="12"/><rect x="38" y="4" width="12" height="12"/><rect x="14" y="16" width="12" height="12"/><rect x="26" y="16" width="12" height="12"/><rect x="38" y="16" width="12" height="12"/><rect x="14" y="28" width="12" height="12"/><rect x="26" y="28" width="12" height="12"/><rect x="38" y="28" width="12" height="12"/></g><circle cx="32" cy="10" r="4" fill="#d8bd5e" stroke="#151515"/><circle cx="20" cy="22" r="4" fill="#cf8a72" stroke="#151515"/><circle cx="44" cy="34" r="4" fill="#6f88a6" stroke="#151515"/></svg><span data-i18n="hp2"></span></li>
+      <li><svg viewBox="0 0 60 44" aria-hidden="true"><rect x="10" y="8" width="40" height="28" rx="3" fill="#e2d293" stroke="#151515" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="16" y="16" width="14" height="11" rx="2" fill="#fff" stroke="#151515" stroke-width="1.2"/><rect x="18" y="22" width="10" height="3" fill="#b4533a"/><circle cx="40" cy="22" r="6" fill="#151515"/><text x="40" y="24.5" font-size="6" text-anchor="middle" fill="#fff" font-family="monospace" font-weight="700">AI</text></svg><span data-i18n="hp3"></span></li>
+    </ol>
+    <p class="hnote" data-i18n="hp_note"></p>
+    <button class="btn primary" type="button" id="helpok" data-i18n="hp_ok"></button>
+  </div>
+</div>
+<div class="pal-back" id="palback" hidden>
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="pal-top"><kbd>⌘K</kbd><input id="palin" autocomplete="off" spellcheck="false" aria-label="Search commands"><kbd>esc</kbd></div>
+    <ul class="pal-list" id="pallist" role="listbox"></ul>
+  </div>
+</div>
+
+<script>
+window.I18N={"en":{"_name":"English","unit":"CASE FILE · PRODUCT MANAGER","langbtn":"Change language","toc1":"The case","toc2":"The map (the puzzle)","toc3":"Case files (my work)","toc4":"The mastermind (about me)","toc5":"Evidence locker","toc1s":"The case","toc2s":"The map","toc3s":"Case files","toc4s":"The mastermind","toc5s":"Evidence locker","chap":"Chapter {n}","case_t":"Who chope'd the best table?","case_s":"A little logic puzzle in my little internet space.","story1":"Welcome to my little internet space. Grab a seat. It's raining outside, obviously.","story2":"Someone has left a tissue packet on the best table. In Singapore that means <em>this seat is taken</em>. In the UK it means someone's lost their tissues. Six suspects were in the building, and every one of them is me at a different point in my career.","howto":"How to play","step1":"<b>Pick a suspect</b> from the list, or press <kbd>1</kbd>–<kbd>6</kbd>.","step2":"<b>Tap a square</b> on the map to seat them. Tap them again to pick them back up.","step3":"<b>Follow the clues.</b> One suspect per row and per column. Nobody sits on the tissue packet or on furniture.","step4":"<b>Whoever is alone</b> in the same area as the tissue packet is where I am now.","skip":"Not a puzzle person? Skip to my work","map_t":"The map","map_s":"Seat all six suspects. <kbd>Esc</kbd> crosses squares out, <kbd>C</kbd> checks, <kbd>R</kbd> clears.","sh1":"1 · Pick a suspect","sh2":"2 · Use the clues","sh3":"3 · Check your answer","clue1":"The <b>Kopi Scholar</b> sat on the green stool at the Kopi stall.","clue2":"The <b>Dabao Dispatcher</b> was next to the roast chickens.","clue3":"The <b>QR Auntie</b> was at the Currywurst stand.","clue4":"The <b>Wallet Whisperer</b> was at the Bäckerei asking for stroopwafels, in a lower row than the QR Auntie.","clue5":"The <b>Payroll Fixer</b> was next to the teapot.","clue6":"The <b>AI Teammate</b> was next to the marble table.","b_check":"Check seating","b_clear":"Clear","b_reveal":"Just tell me","files_t":"Case files","files_s":"Six suspects, six industries, one product manager.","vk0":"Current location: unknown","vt0":"Currently at: <span class=\"redact\">THE AI TEAMMATE</span>. Solve the map to find out.","vk1":"Current location: found","vt1":"The <b>AI Teammate</b> chope'd the best table. That's where I am now: at Primer, building AI that turns data into insights. The other five are how I got here.","about_t":"The mastermind","about_s":"Three countries, one person.","sg_c":"Singapore","uk_c":"United Kingdom","de_c":"Germany","sg_w":"Home","uk_w":"Right now","de_w":"Sometimes","sg_p":"Where I grew up, endlessly fascinated by how humans work.","uk_p":"Where I'm at: adapting to the culture and living life abroad.","de_p":"Where I spend some of my time. Learning German, one word at a time.","sg_s":"Says: shiok, can or not, chope","uk_s":"Picked up: cheers, cuppa, brolly","de_s":"Learning: Feierabend, Pfand, Brötchen","prof_h":"Profile","prof1":"I build products where money, data and AI meet.","prof2":"I'm not an engineer, but I know how the pipes connect.","det_h":"Known details","dt_sp":"Speaks","dt_path":"Path","dt_off":"Off duty","speaks":"English, Chinese, beginner German","path":"Psychology → UX → logistics → payments → payroll → AI","off":"Obsessed with e-ink devices. Yes, this page is a nod to that.","ev_s":"Training, and a terminal. Try typing <code>stack</code>.","rap_h":"Rap sheet","end":"END OF FILE · CONTACT DETAILS COMING SOON","pick":"Seating: {n}. Tap a square.","nopick":"No suspect picked: tapping crosses squares out.","seated":"{n} / 6 SEATED","packet":"That table's chope'd. Nobody sits there.","furn":"That's the {n}. Nobody sits there.","clash":"Two suspects share a row or column. One each, please.","more":"{n} of 6 seated. Keep going.","one":"Aiyoh, so close: one suspect is in the wrong seat.","many":"Ach nein: {n} suspects are in the wrong seats.","solved":"Shiok! Wunderbar! Lovely! Found me. Press DOWN.","focus":"Building","outcome":"Evidence","seen":"Seen at","lpacket":"Tissue packet","pal_ph":"Type a language or page…","pal_lang":"Language","pal_go":"Go to","zones":{"K":"Kopi","C":"Chicken Rice","S":"Currywurst","D":"Bäckerei","T":"Tables","V":"Chippy"},"chopez":"chope zone","furnn":["No durians sign","Kopi cups","Roast chickens","Marble table","Pfand crate","Brezel stand","Teapot","Wet brolly","Green stool (seat)"],"sus":{"L":["The Kopi Scholar","Education","A digital learning system for students’ career coaching.","Coaching engagement up <span class=\"stat\">500%</span>."],"Z":["The Dabao Dispatcher","Logistics","A B2B SaaS platform from 0 to 1: routing algorithms, driver apps, APIs, OAuth and role-based access.","Scaled to <span class=\"stat\">8</span> APAC markets and <span class=\"stat\">3x</span> revenue."],"P":["The QR Auntie","Fintech","Virtual card issuing and payments across 7 Asian markets.","Automated card refunds, cutting manual review by <span class=\"stat\">90%</span>."],"A":["The Wallet Whisperer","Payments","Alipay and WeChat Pay for merchants worldwide.","Launched Adyen’s first platform payments for Alipay and WeChat Pay, adding <span class=\"stat\">~2%</span> to global revenue growth."],"R":["The Payroll Fixer","HR tech","Payroll across 80+ countries.","Payroll processing cut from <span class=\"stat\">2 weeks</span> to <span class=\"stat\">20 min</span>."],"C":["The AI Teammate","Payments × AI","An AI analytics layer that turns data into insights.","Monthly active merchants up from <span class=\"stat\">50%</span> to <span class=\"stat\">75%</span>."]},"dt_like":"Weakness","likes":"Sushi and soup.","tw_pre":"Building products in ","tw_words":["payments","AI","payroll","logistics","fintech"],"tw_suf":"","hp_t":"How to play","hp1":"Pick a suspect","hp2":"Seat them. One per row &amp; column.","hp3":"Alone with the tissues? That's where I am now.","hp_note":"Next to = directly left, right, above or below. You can sit on stools, not on other stuff.","hp_ok":"Got it","hp_btn":"How to play","taken":"Someone's already in that row or column. One each, please.","map_s_t":"Seat all six suspects."},"zh":{"_name":"简体中文","unit":"案件档案 · 产品经理","langbtn":"切换语言","toc1":"案情","toc2":"地图（解谜）","toc3":"案件档案（我的工作）","toc4":"幕后主谋（关于我）","toc5":"证物柜","toc1s":"案情","toc2s":"地图","toc3s":"案件档案","toc4s":"幕后主谋","toc5s":"证物柜","chap":"第 {n} 章","case_t":"谁用纸巾占了最好的桌子？","case_s":"我的小小网络空间里的一道小推理题。","story1":"欢迎来到我的小小网络空间。随便坐。外面当然在下雨。","story2":"有人在最好的桌子上放了一包纸巾。在新加坡，这表示<em>这个位子有人了</em>。在英国，这只表示有人把纸巾忘了。当时场内有六名嫌疑人，每一个都是我在职业生涯不同阶段的自己。","howto":"玩法","step1":"从名单中<b>选择一名嫌疑人</b>，或按 <kbd>1</kbd>–<kbd>6</kbd>。","step2":"在地图上<b>点击一个格子</b>让他们入座。再点一次可以把人拿起来。","step3":"<b>根据线索推理。</b>每行、每列只能有一名嫌疑人。谁都不能坐在纸巾包或家具上。","step4":"和纸巾包在同一区域、<b>而且只有一人</b>的那位，就是现在的我。","skip":"不想解谜？直接看我的工作","map_t":"地图","map_s":"让六名嫌疑人全部入座。<kbd>Esc</kbd> 划掉格子，<kbd>C</kbd> 检查，<kbd>R</kbd> 清空。","sh1":"1 · 选择嫌疑人","sh2":"2 · 运用线索","sh3":"3 · 检查答案","clue1":"<b>咖啡学者</b>坐在咖啡摊的绿色塑料凳上。","clue2":"<b>打包快递员</b>在烧鸡旁边。","clue3":"<b>二维码安娣</b>在咖喱香肠摊。","clue4":"<b>钱包通</b>在面包店问有没有荷兰焦糖华夫饼，所在的行比二维码安娣更靠下。","clue5":"<b>薪资修理工</b>在茶壶旁边。","clue6":"<b>AI 队友</b>在大理石桌旁边。","b_check":"检查座位","b_clear":"清空","b_reveal":"直接告诉我","files_t":"案件档案","files_s":"六名嫌疑人，六个行业，一位产品经理。","vk0":"目前位置：未知","vt0":"目前在：<span class=\"redact\">THE AI TEAMMATE</span>。解开地图就知道。","vk1":"目前位置：找到了","vt1":"占了最好桌子的是 <b>AI 队友</b>。这就是我现在的位置：在 Primer 打造把数据变成洞察的 AI。其他五位，是我一路走来的样子。","about_t":"幕后主谋","about_s":"三个国家，一个人。","sg_c":"新加坡","uk_c":"英国","de_c":"德国","sg_w":"家","uk_w":"现在","de_w":"有时","sg_p":"我长大的地方，一直着迷于人是怎么运作的。","uk_p":"我现在所在的地方：适应这里的文化，过着海外生活。","de_p":"我有时会待的地方。一个词一个词地学德语。","sg_s":"常说：shiok、can or not、chope","uk_s":"学会了：cheers、cuppa、brolly","de_s":"正在学：Feierabend、Pfand、Brötchen","prof_h":"简介","prof1":"我在金钱、数据和 AI 交汇的地方打造产品。","prof2":"我不是工程师，但我知道这些系统是怎么接起来的。","det_h":"已知资料","dt_sp":"语言","dt_path":"路径","dt_off":"下班后","speaks":"英语、中文、初级德语","path":"心理学 → UX → 物流 → 支付 → 薪资 → AI","off":"对电子墨水设备非常着迷。没错，这个页面就是向它致敬。","ev_s":"学历，还有一个终端。试试输入 <code>stack</code>。","rap_h":"履历","end":"档案结束 · 联系方式即将公布","pick":"正在安排：{n}。点击一个格子。","nopick":"未选择嫌疑人：点击格子会将其划掉。","seated":"已入座 {n} / 6","packet":"那张桌子已经被占了，谁都不能坐。","furn":"{n}：不能坐人。","clash":"有两名嫌疑人在同一行或同一列。每行每列只能一个。","more":"已入座 {n} / 6，继续加油。","one":"哎哟，差一点：有一名嫌疑人坐错了。","many":"Ach nein：有 {n} 名嫌疑人坐错了。","solved":"Shiok！Wunderbar！Lovely！找到我了。按 DOWN 继续。","focus":"打造","outcome":"证据","seen":"出没地点","lpacket":"纸巾包","pal_ph":"输入语言或页面…","pal_lang":"语言","pal_go":"前往","zones":{"K":"咖啡","C":"鸡饭","S":"咖喱香肠","D":"面包店","T":"餐桌","V":"炸鱼薯条"},"chopez":"霸位区","furnn":["禁止榴莲标志","咖啡杯","烧鸡","大理石桌","押金瓶箱","椒盐卷饼摊","茶壶","湿雨伞","绿色塑料凳（可坐）"],"sus":{"L":["咖啡学者","教育","为学生职业辅导打造数字学习系统。","职业辅导参与度提升 <span class=\"stat\">500%</span>。"],"Z":["打包快递员","物流","从零到一打造 B2B SaaS 平台：路线算法、司机 App、API、OAuth 和权限管理。","扩展到 <span class=\"stat\">8</span> 个亚太市场，营收增长 <span class=\"stat\">3 倍</span>。"],"P":["二维码安娣","金融科技","虚拟卡发卡，以及覆盖 7 个亚洲市场的支付。","虚拟卡退款自动化，人工审核减少 <span class=\"stat\">90%</span>。"],"A":["钱包通","支付","面向全球商家的支付宝和微信支付。","推出 Adyen 首个支持支付宝和微信支付的平台型支付功能，为全球营收增长贡献约 <span class=\"stat\">2%</span>。"],"R":["薪资修理工","人力资源科技","覆盖 80 多个国家的薪资系统。","薪资处理时间从 <span class=\"stat\">2 周</span>缩短到 <span class=\"stat\">20 分钟</span>。"],"C":["AI 队友","支付 × AI","AI 分析层，把数据变成洞察。","月活跃商家从 <span class=\"stat\">50%</span> 提升到 <span class=\"stat\">75%</span>。"]},"dt_like":"弱点","likes":"寿司和汤。","tw_pre":"在","tw_words":["支付","AI","薪资","物流","金融科技"],"tw_suf":"领域打造产品","hp_t":"玩法","hp1":"选一名嫌疑人","hp2":"让他们入座。每行每列只坐一个。","hp3":"和纸巾同区只有一人？那就是现在的我。","hp_note":"旁边 = 正左、正右、正上或正下。可以坐凳子，其他东西不能坐。","hp_ok":"知道了","hp_btn":"玩法","taken":"那一行或那一列已经有人了。每行每列只能一个。","map_s_t":"让六名嫌疑人全部入座。"},"zht":{"_name":"繁體中文","unit":"案件檔案 · 產品經理","langbtn":"切換語言","toc1":"案情","toc2":"地圖（解謎）","toc3":"案件檔案（我的工作）","toc4":"幕後主謀（關於我）","toc5":"證物櫃","toc1s":"案情","toc2s":"地圖","toc3s":"案件檔案","toc4s":"幕後主謀","toc5s":"證物櫃","chap":"第 {n} 章","case_t":"誰用紙巾佔了最好的桌子？","case_s":"我的小小網路空間裡的一道小推理題。","story1":"歡迎來到我的小小網路空間。隨便坐。外面當然在下雨。","story2":"有人在最好的桌子上放了一包紙巾。在新加坡，這表示<em>這個位子有人了</em>。在英國，這只是表示有人把紙巾忘了。當時場內有六名嫌疑人，每一個都是我在職業生涯不同階段的自己。","howto":"玩法","step1":"從名單中<b>選擇一名嫌疑人</b>，或按 <kbd>1</kbd>–<kbd>6</kbd>。","step2":"在地圖上<b>點擊一個格子</b>讓他們入座。再點一次可以把人拿起來。","step3":"<b>根據線索推理。</b>每行、每列只能有一名嫌疑人。誰都不能坐在紙巾包或傢俱上。","step4":"和紙巾包在同一區域、<b>而且只有一人</b>的那位，就是現在的我。","skip":"不想解謎？直接看我的工作","map_t":"地圖","map_s":"讓六名嫌疑人全部入座。<kbd>Esc</kbd> 劃掉格子，<kbd>C</kbd> 檢查，<kbd>R</kbd> 清空。","sh1":"1 · 選擇嫌疑人","sh2":"2 · 運用線索","sh3":"3 · 檢查答案","clue1":"<b>咖啡學者</b>坐在咖啡攤的綠色塑料凳上。","clue2":"<b>打包快遞員</b>在燒雞旁邊。","clue3":"<b>二維碼安娣</b>在咖喱香腸攤。","clue4":"<b>錢包通</b>在麵包店問有沒有荷蘭焦糖華夫餅，所在的行比二維碼安娣更靠下。","clue5":"<b>薪資修理工</b>在茶壺旁邊。","clue6":"<b>AI 隊友</b>在大理石桌旁邊。","b_check":"檢查座位","b_clear":"清空","b_reveal":"直接告訴我","files_t":"案件檔案","files_s":"六名嫌疑人，六個行業，一位產品經理。","vk0":"目前位置：未知","vt0":"目前在：<span class=\"redact\">THE AI TEAMMATE</span>。解開地圖就知道。","vk1":"目前位置：找到了","vt1":"佔了最好桌子的是 <b>AI 隊友</b>。這就是我現在的位置：在 Primer 打造把數據變成洞察的 AI。其他五位，是我一路走來的樣子。","about_t":"幕後主謀","about_s":"三個國家，一個人。","sg_c":"新加坡","uk_c":"英國","de_c":"德國","sg_w":"家","uk_w":"現在","de_w":"有時","sg_p":"我長大的地方，一直著迷於人是怎麼運作的。","uk_p":"我現在所在的地方：適應這裡的文化，過著海外生活。","de_p":"我有時會待的地方。一個詞一個詞地學德語。","sg_s":"常說：shiok、can or not、chope","uk_s":"學會了：cheers、cuppa、brolly","de_s":"正在學：Feierabend、Pfand、Brötchen","prof_h":"簡介","prof1":"我在金錢、數據和 AI 交匯的地方打造產品。","prof2":"我不是工程師，但我知道這些系統是怎麼接起來的。","det_h":"已知資料","dt_sp":"語言","dt_path":"路徑","dt_off":"下班後","speaks":"英語、中文、初級德語","path":"心理學 → UX → 物流 → 支付 → 薪資 → AI","off":"對電子墨水設備非常著迷。沒錯，這個頁面就是向它致敬。","ev_s":"學歷，還有一個終端。試試輸入 <code>stack</code>。","rap_h":"履歷","end":"檔案結束 · 聯繫方式即將公佈","pick":"正在安排：{n}。點擊一個格子。","nopick":"未選擇嫌疑人：點擊格子會將其劃掉。","seated":"已入座 {n} / 6","packet":"那張桌子已經被佔了，誰都不能坐。","furn":"{n}：不能坐人。","clash":"有兩名嫌疑人在同一行或同一列。每行每列只能一個。","more":"已入座 {n} / 6，繼續加油。","one":"哎喲，差一點：有一名嫌疑人坐錯了。","many":"Ach nein：有 {n} 名嫌疑人坐錯了。","solved":"Shiok！Wunderbar！Lovely！找到我了。按 DOWN 繼續。","focus":"打造","outcome":"證據","seen":"出沒地點","lpacket":"紙巾包","pal_ph":"輸入語言或頁面…","pal_lang":"語言","pal_go":"前往","zones":{"K":"咖啡","C":"雞飯","S":"咖喱香腸","D":"麵包店","T":"餐桌","V":"炸魚薯條"},"chopez":"霸位區","furnn":["禁止榴槤標誌","咖啡杯","燒雞","大理石桌","押金瓶箱","椒鹽捲餅攤","茶壺","濕雨傘","綠色塑料凳（可坐）"],"sus":{"L":["咖啡學者","教育","爲學生職業輔導打造數字學習系統。","職業輔導參與度提升 <span class=\"stat\">500%</span>。"],"Z":["打包快遞員","物流","從零到一打造 B2B SaaS 平臺：路線算法、司機 App、API、OAuth 和權限管理。","擴展到 <span class=\"stat\">8</span> 個亞太市場，營收增長 <span class=\"stat\">3 倍</span>。"],"P":["二維碼安娣","金融科技","虛擬卡髮卡，以及覆蓋 7 個亞洲市場的支付。","虛擬卡退款自動化，人工審覈減少 <span class=\"stat\">90%</span>。"],"A":["錢包通","支付","面向全球商家的支付寶和微信支付。","推出 Adyen 首個支持支付寶和微信支付的平臺型支付功能，爲全球營收增長貢獻約 <span class=\"stat\">2%</span>。"],"R":["薪資修理工","人力資源科技","覆蓋 80 多個國家的薪資系統。","薪資處理時間從 <span class=\"stat\">2 周</span>縮短到 <span class=\"stat\">20 分鐘</span>。"],"C":["AI 隊友","支付 × AI","AI 分析層，把數據變成洞察。","月活躍商家從 <span class=\"stat\">50%</span> 提升到 <span class=\"stat\">75%</span>。"]},"dt_like":"弱點","likes":"壽司和湯。","tw_pre":"在","tw_words":["支付","AI","薪資","物流","金融科技"],"tw_suf":"領域打造產品","hp_t":"玩法","hp1":"選一名嫌疑人","hp2":"讓他們入座。每行每列只坐一個。","hp3":"和紙巾同區只有一人？那就是現在的我。","hp_note":"旁邊 = 正左、正右、正上或正下。可以坐凳子，其他東西不能坐。","hp_ok":"知道了","hp_btn":"玩法","taken":"那一行或那一列已經有人了。每行每列只能一個。","map_s_t":"讓六名嫌疑人全部入座。"},"de":{"_name":"Deutsch","unit":"FALLAKTE · PRODUCT MANAGERIN","langbtn":"Sprache wechseln","toc1":"Der Fall","toc2":"Die Karte (das Rätsel)","toc3":"Fallakten (meine Arbeit)","toc4":"Das Mastermind (über mich)","toc5":"Asservatenkammer","toc1s":"Der Fall","toc2s":"Die Karte","toc3s":"Fallakten","toc4s":"Das Mastermind","toc5s":"Asservatenkammer","chap":"Kapitel {n}","case_t":"Wer hat den besten Tisch reserviert?","case_s":"Ein kleines Logikrätsel in meiner kleinen Ecke des Internets.","story1":"Willkommen in meiner kleinen Ecke des Internets. Setz dich. Draußen regnet es, natürlich.","story2":"Jemand hat eine Packung Taschentücher auf den besten Tisch gelegt. In Singapur heißt das <em>dieser Platz ist besetzt</em>. In Großbritannien heißt es, dass jemand seine Taschentücher vergessen hat. Sechs Verdächtige waren im Gebäude, und jede davon bin ich, in einer anderen Phase meiner Karriere.","howto":"So geht's","step1":"<b>Wähle eine Verdächtige</b> aus der Liste oder drück <kbd>1</kbd>–<kbd>6</kbd>.","step2":"<b>Tippe auf ein Feld</b>, um sie dorthin zu setzen. Tipp sie nochmal an, um sie wieder aufzunehmen.","step3":"<b>Folge den Hinweisen.</b> Eine Verdächtige pro Zeile und pro Spalte. Niemand sitzt auf den Taschentüchern oder auf Möbeln.","step4":"<b>Wer allein</b> im selben Bereich wie die Taschentücher sitzt, zeigt, wo ich gerade bin.","skip":"Keine Lust auf Rätsel? Direkt zu meiner Arbeit","map_t":"Die Karte","map_s":"Setz alle sechs Verdächtigen. <kbd>Esc</kbd> streicht Felder, <kbd>C</kbd> prüft, <kbd>R</kbd> leert.","sh1":"1 · Verdächtige wählen","sh2":"2 · Hinweise nutzen","sh3":"3 · Lösung prüfen","clue1":"Die <b>Kopi-Gelehrte</b> saß auf dem grünen Hocker am Kopi-Stand.","clue2":"Die <b>Dabao-Disponentin</b> stand neben den Brathähnchen.","clue3":"Die <b>QR-Tante</b> war am Currywurst-Stand.","clue4":"Die <b>Wallet-Flüsterin</b> fragte in der Bäckerei nach Stroopwafels, in einer tieferen Zeile als die QR-Tante.","clue5":"Die <b>Payroll-Retterin</b> stand neben der Teekanne.","clue6":"Die <b>KI-Kollegin</b> war neben dem Marmortisch.","b_check":"Prüfen","b_clear":"Leeren","b_reveal":"Sag's mir einfach","files_t":"Fallakten","files_s":"Sechs Verdächtige, sechs Branchen, eine Product Managerin.","vk0":"Aktueller Standort: unbekannt","vt0":"Gerade bei: <span class=\"redact\">THE AI TEAMMATE</span>. Löse die Karte, um es herauszufinden.","vk1":"Aktueller Standort: gefunden","vt1":"Die <b>KI-Kollegin</b> hat den besten Tisch reserviert. Da bin ich gerade: bei Primer, wo ich KI baue, die aus Daten Erkenntnisse macht. Die anderen fünf zeigen, wie ich hierher kam.","about_t":"Das Mastermind","about_s":"Drei Länder, eine Person.","sg_c":"Singapur","uk_c":"Großbritannien","de_c":"Deutschland","sg_w":"Zuhause","uk_w":"Gerade","de_w":"Manchmal","sg_p":"Wo ich aufgewachsen bin, schon immer fasziniert davon, wie Menschen funktionieren.","uk_p":"Wo ich gerade bin: Ich gewöhne mich an die Kultur und lebe im Ausland.","de_p":"Wo ich manchmal bin. Ich lerne Deutsch, ein Wort nach dem anderen.","sg_s":"Sagt: shiok, can or not, chope","uk_s":"Gelernt: cheers, cuppa, brolly","de_s":"Lernt gerade: Feierabend, Pfand, Brötchen","prof_h":"Profil","prof1":"Ich baue Produkte, wo Geld, Daten und KI aufeinandertreffen.","prof2":"Ich bin keine Ingenieurin, aber ich weiß, wie die Leitungen zusammenhängen.","det_h":"Bekannte Details","dt_sp":"Spricht","dt_path":"Weg","dt_off":"Feierabend","speaks":"Englisch, Chinesisch, Deutsch (Anfängerin)","path":"Psychologie → UX → Logistik → Payments → Payroll → KI","off":"Besessen von E-Ink-Geräten. Ja, diese Seite ist eine Hommage daran.","ev_s":"Ausbildung und ein Terminal. Tipp mal <code>stack</code> ein.","rap_h":"Vorstrafenregister","end":"ENDE DER AKTE · KONTAKTDATEN FOLGEN","pick":"Setze: {n}. Tippe auf ein Feld.","nopick":"Keine Verdächtige gewählt: Tippen streicht Felder.","seated":"{n} / 6 GESETZT","packet":"Der Tisch ist reserviert. Da sitzt niemand.","furn":"{n}: Da sitzt niemand.","clash":"Zwei Verdächtige teilen sich eine Zeile oder Spalte. Eine pro Reihe, bitte.","more":"{n} von 6 gesetzt. Weiter so.","one":"Aiyoh, knapp: eine Verdächtige sitzt falsch.","many":"Ach nein: {n} Verdächtige sitzen falsch.","solved":"Shiok! Wunderbar! Lovely! Gefunden. Drück DOWN.","focus":"Baut","outcome":"Beweis","seen":"Gesehen bei","lpacket":"Taschentücher","pal_ph":"Sprache oder Seite eingeben…","pal_lang":"Sprache","pal_go":"Gehe zu","zones":{"K":"Kopi","C":"Hühnerreis","S":"Currywurst","D":"Bäckerei","T":"Tische","V":"Fish & Chips"},"chopez":"reserviert","furnn":["Durian-Verbotsschild","Kopi-Tassen","Brathähnchen","Marmortisch","Pfandkiste","Brezelstand","Teekanne","Nasser Schirm","Grüner Hocker (Sitzplatz)"],"sus":{"L":["Die Kopi-Gelehrte","Bildung","Ein digitales Lernsystem für die Karriereberatung von Studierenden.","Nutzung der Karriereberatung um <span class=\"stat\">500%</span> gesteigert."],"Z":["Die Dabao-Disponentin","Logistik","Eine B2B-SaaS-Plattform von 0 auf 1: Routing-Algorithmen, Fahrer-Apps, APIs, OAuth und Rollenrechte.","Auf <span class=\"stat\">8</span> APAC-Märkte skaliert, Umsatz <span class=\"stat\">3x</span>."],"P":["Die QR-Tante","Fintech","Virtuelle Kartenausgabe und Payments in 7 asiatischen Märkten.","Kartenerstattungen automatisiert, <span class=\"stat\">90%</span> weniger manuelle Prüfung."],"A":["Die Wallet-Flüsterin","Payments","Alipay und WeChat Pay für Händler weltweit.","Adyens erste Plattform-Zahlungen für Alipay und WeChat Pay gestartet, <span class=\"stat\">~2%</span> mehr globales Umsatzwachstum."],"R":["Die Payroll-Retterin","HR-Tech","Payroll in über 80 Ländern.","Payroll-Verarbeitung von <span class=\"stat\">2 Wochen</span> auf <span class=\"stat\">20 Min.</span> verkürzt."],"C":["Die KI-Kollegin","Payments × KI","Eine KI-Analyseebene, die aus Daten Erkenntnisse macht.","Monatlich aktive Händler von <span class=\"stat\">50%</span> auf <span class=\"stat\">75%</span>."]},"dt_like":"Schwäche","likes":"Sushi und Suppe.","tw_pre":"Baut Produkte für ","tw_words":["Payments","KI","Payroll","Logistik","Fintech"],"tw_suf":"","hp_t":"So geht's","hp1":"Wähle eine Verdächtige","hp2":"Setz sie hin. Eine pro Zeile und Spalte.","hp3":"Allein mit den Taschentüchern? Da bin ich gerade.","hp_note":"Neben = direkt links, rechts, darüber oder darunter. Auf Hockern darf man sitzen, sonst nirgends.","hp_ok":"Alles klar","hp_btn":"So geht's","taken":"In dieser Zeile oder Spalte sitzt schon jemand. Eine pro Reihe, bitte.","map_s_t":"Setz alle sechs Verdächtigen."},"ko":{"_name":"한국어","unit":"사건 파일 · 프로덕트 매니저","langbtn":"언어 바꾸기","toc1":"사건 개요","toc2":"지도 (퍼즐)","toc3":"사건 파일 (내 일)","toc4":"배후의 인물 (나에 대해)","toc5":"증거 보관함","toc1s":"사건 개요","toc2s":"지도","toc3s":"사건 파일","toc4s":"배후의 인물","toc5s":"증거 보관함","chap":"{n}장","case_t":"누가 가장 좋은 테이블을 맡아 놨을까?","case_s":"나의 작은 인터넷 공간 속 작은 추리 퍼즐.","story1":"나의 작은 인터넷 공간에 온 걸 환영해요. 편하게 앉으세요. 밖에는 당연히 비가 와요.","story2":"누군가 가장 좋은 테이블에 휴지 한 팩을 올려 두었어요. 싱가포르에서는 <em>여기 자리 있어요</em>라는 뜻이죠. 영국에서는 그냥 누가 휴지를 두고 간 거고요. 건물 안에는 용의자가 여섯 명 있었는데, 모두 커리어의 서로 다른 시기의 저예요.","howto":"플레이 방법","step1":"목록에서 <b>용의자를 고르세요</b>. <kbd>1</kbd>–<kbd>6</kbd> 키도 돼요.","step2":"지도의 <b>칸을 눌러</b> 앉히세요. 다시 누르면 들어 올릴 수 있어요.","step3":"<b>단서를 따라가세요.</b> 각 행과 열에는 용의자가 한 명씩만. 휴지 팩이나 가구 위에는 아무도 앉을 수 없어요.","step4":"휴지 팩과 같은 구역에 <b>혼자 있는 사람</b>이 지금의 저예요.","skip":"퍼즐은 별로라면? 바로 내 일 보러 가기","map_t":"지도","map_s":"용의자 여섯 명을 모두 앉히세요. <kbd>Esc</kbd> 칸 지우기, <kbd>C</kbd> 확인, <kbd>R</kbd> 초기화.","sh1":"1 · 용의자 고르기","sh2":"2 · 단서 활용하기","sh3":"3 · 정답 확인","clue1":"<b>코피 학자</b>는 코피 가게의 초록 플라스틱 의자에 앉아 있었어요.","clue2":"<b>다바오 배송원</b>은 통닭구이 옆에 있었어요.","clue3":"<b>QR 이모</b>는 커리부어스트 가게에 있었어요.","clue4":"<b>월렛 위스퍼러</b>는 빵집에서 스트룹와플을 찾고 있었고, QR 이모보다 아래 줄에 있었어요.","clue5":"<b>급여 해결사</b>는 찻주전자 옆에 있었어요.","clue6":"<b>AI 팀원</b>은 대리석 테이블 옆에 있었어요.","b_check":"확인","b_clear":"초기화","b_reveal":"그냥 알려줘","files_t":"사건 파일","files_s":"용의자 여섯, 산업 여섯, 프로덕트 매니저 한 명.","vk0":"현재 위치: 알 수 없음","vt0":"지금 있는 곳: <span class=\"redact\">THE AI TEAMMATE</span>. 지도를 풀면 알 수 있어요.","vk1":"현재 위치: 찾았어요","vt1":"가장 좋은 테이블을 맡은 건 <b>AI 팀원</b>. 그게 지금의 제 위치예요: Primer에서 데이터를 인사이트로 바꾸는 AI를 만들고 있어요. 나머지 다섯은 제가 여기까지 온 과정이에요.","about_t":"배후의 인물","about_s":"세 나라, 한 사람.","sg_c":"싱가포르","uk_c":"영국","de_c":"독일","sg_w":"고향","uk_w":"지금","de_w":"가끔","sg_p":"자란 곳. 사람이 어떻게 움직이는지 늘 궁금했어요.","uk_p":"지금 있는 곳. 문화에 적응하며 해외 생활 중이에요.","de_p":"가끔 머무는 곳. 독일어를 한 단어씩 배우고 있어요.","sg_s":"자주 하는 말: shiok, can or not, chope","uk_s":"배운 말: cheers, cuppa, brolly","de_s":"배우는 중: Feierabend, Pfand, Brötchen","prof_h":"프로필","prof1":"돈, 데이터, AI가 만나는 곳에서 제품을 만들어요.","prof2":"엔지니어는 아니지만, 시스템이 어떻게 연결되는지는 알아요.","det_h":"알려진 정보","dt_sp":"언어","dt_path":"경로","dt_off":"퇴근 후","speaks":"영어, 중국어, 초급 독일어","path":"심리학 → UX → 물류 → 결제 → 급여 → AI","off":"전자잉크 기기에 푹 빠져 있어요. 네, 이 페이지도 그 오마주예요.","ev_s":"학력, 그리고 터미널. <code>stack</code>을 입력해 보세요.","rap_h":"전과 기록","end":"파일 끝 · 연락처는 곧 공개","pick":"배치 중: {n}. 칸을 누르세요.","nopick":"선택된 용의자 없음: 칸을 누르면 지워져요.","seated":"{n} / 6 착석","packet":"그 테이블은 이미 맡아 놨어요. 아무도 못 앉아요.","furn":"{n}: 앉을 수 없어요.","clash":"두 용의자가 같은 행이나 열에 있어요. 한 줄에 한 명씩이요.","more":"{n} / 6 착석. 계속하세요.","one":"아이고, 아깝다: 한 명이 잘못 앉았어요.","many":"Ach nein: {n}명이 잘못 앉았어요.","solved":"Shiok! Wunderbar! Lovely! 찾았어요. DOWN을 누르세요.","focus":"만든 것","outcome":"증거","seen":"목격 장소","lpacket":"휴지 팩","pal_ph":"언어나 페이지를 입력하세요…","pal_lang":"언어","pal_go":"이동","zones":{"K":"코피","C":"치킨라이스","S":"커리부어스트","D":"빵집","T":"테이블","V":"피시앤칩스"},"chopez":"자리 맡기 구역","furnn":["두리안 금지 표지판","코피 컵","통닭구이","대리석 테이블","판트 병 상자","프레첼 가판대","찻주전자","젖은 우산","초록 플라스틱 의자 (앉을 수 있음)"],"sus":{"L":["코피 학자","교육","학생 커리어 코칭을 위한 디지털 학습 시스템.","커리어 코칭 참여율 <span class=\"stat\">500%</span> 증가."],"Z":["다바오 배송원","물류","B2B SaaS 플랫폼을 0에서 1로: 경로 알고리즘, 기사용 앱, API, OAuth, 권한 관리.","<span class=\"stat\">8</span>개 아태 시장으로 확장, 매출 <span class=\"stat\">3배</span>."],"P":["QR 이모","핀테크","가상 카드 발급과 아시아 7개 시장의 결제.","카드 환불 자동화로 수동 검토 <span class=\"stat\">90%</span> 감소."],"A":["월렛 위스퍼러","결제","전 세계 가맹점을 위한 알리페이와 위챗페이.","Adyen 최초로 알리페이·위챗페이 플랫폼 결제를 출시해 글로벌 매출 성장에 <span class=\"stat\">약 2%</span> 기여."],"R":["급여 해결사","HR 테크","80개국 이상의 급여 처리.","급여 처리 시간을 <span class=\"stat\">2주</span>에서 <span class=\"stat\">20분</span>으로 단축."],"C":["AI 팀원","결제 × AI","데이터를 인사이트로 바꾸는 AI 분석 레이어.","월간 활성 가맹점 <span class=\"stat\">50%</span>에서 <span class=\"stat\">75%</span>로."]},"dt_like":"약점","likes":"스시와 수프.","tw_pre":"","tw_words":["결제","AI","급여","물류","핀테크"],"tw_suf":" 분야의 제품을 만들어요","hp_t":"플레이 방법","hp1":"용의자를 고르세요","hp2":"앉히세요. 행과 열마다 한 명씩.","hp3":"휴지와 같은 구역에 혼자? 그게 지금의 저예요.","hp_note":"옆 = 바로 왼쪽, 오른쪽, 위, 아래. 의자에는 앉을 수 있지만 다른 물건 위에는 안 돼요.","hp_ok":"알겠어요","hp_btn":"플레이 방법","taken":"그 행이나 열에는 이미 누가 있어요. 한 줄에 한 명씩이요.","map_s_t":"용의자 여섯 명을 모두 앉히세요."},"ja":{"_name":"日本語","unit":"事件ファイル · プロダクトマネージャー","langbtn":"言語を変える","toc1":"事件の概要","toc2":"マップ（パズル）","toc3":"事件ファイル（私の仕事）","toc4":"黒幕（私について）","toc5":"証拠品保管庫","toc1s":"事件の概要","toc2s":"マップ","toc3s":"事件ファイル","toc4s":"黒幕","toc5s":"証拠品保管庫","chap":"第{n}章","case_t":"一番いいテーブルを取ったのは誰？","case_s":"私の小さなインターネットの片隅で解く、小さな推理パズル。","story1":"私の小さなインターネットの片隅へようこそ。どうぞ座って。外はもちろん雨。","story2":"誰かが一番いいテーブルにポケットティッシュを置いていきました。シンガポールでは<em>この席は取ってあります</em>という意味。イギリスでは、ただ誰かがティッシュを忘れただけ。館内には容疑者が6人。全員、キャリアのそれぞれの時期の私です。","howto":"遊び方","step1":"リストから<b>容疑者を選ぶ</b>か、<kbd>1</kbd>–<kbd>6</kbd>を押します。","step2":"マップの<b>マスをタップ</b>して座らせます。もう一度タップすると持ち上げられます。","step3":"<b>手がかりに従う。</b>各行・各列に容疑者は1人だけ。ティッシュや家具の上には座れません。","step4":"ティッシュと同じエリアに<b>1人だけいる人</b>が、今の私です。","skip":"パズルはパス？私の仕事へ","map_t":"マップ","map_s":"6人全員を座らせよう。<kbd>Esc</kbd> でマスに×、<kbd>C</kbd> で確認、<kbd>R</kbd> でリセット。","sh1":"1 · 容疑者を選ぶ","sh2":"2 · 手がかりを使う","sh3":"3 · 答え合わせ","clue1":"<b>コピの学者</b>はコピの店の緑のスツールに座っていた。","clue2":"<b>ダバオ配達人</b>は吊るしローストチキンの隣にいた。","clue3":"<b>QRおばちゃん</b>はカリーヴルストの店にいた。","clue4":"<b>ウォレットの囁き手</b>はパン屋でストロープワッフルを探していた。QRおばちゃんより下の行。","clue5":"<b>給与の修理屋</b>はティーポットの隣にいた。","clue6":"<b>AIチームメイト</b>は大理石のテーブルの隣にいた。","b_check":"確認","b_clear":"クリア","b_reveal":"答えを見る","files_t":"事件ファイル","files_s":"容疑者6人、業界6つ、プロダクトマネージャー1人。","vk0":"現在地：不明","vt0":"現在地：<span class=\"redact\">THE AI TEAMMATE</span>。マップを解けばわかります。","vk1":"現在地：発見","vt1":"一番いいテーブルを取ったのは<b>AIチームメイト</b>。それが今の私の居場所。Primerで、データをインサイトに変えるAIをつくっています。残りの5人は、ここまでの道のり。","about_t":"黒幕","about_s":"3つの国、1人の人間。","sg_c":"シンガポール","uk_c":"イギリス","de_c":"ドイツ","sg_w":"ふるさと","uk_w":"今","de_w":"ときどき","sg_p":"育った場所。人がどう動くのかにずっと夢中。","uk_p":"今いる場所。文化に慣れながら海外生活中。","de_p":"ときどき過ごす場所。ドイツ語を1語ずつ勉強中。","sg_s":"口ぐせ：shiok、can or not、chope","uk_s":"覚えた：cheers、cuppa、brolly","de_s":"勉強中：Feierabend、Pfand、Brötchen","prof_h":"プロフィール","prof1":"お金、データ、AIが交わるところでプロダクトをつくっています。","prof2":"エンジニアではないけれど、システムがどうつながるかは分かります。","det_h":"判明している情報","dt_sp":"言語","dt_path":"経歴","dt_off":"オフの日","speaks":"英語、中国語、初級ドイツ語","path":"心理学 → UX → 物流 → 決済 → 給与 → AI","off":"電子ペーパー端末に夢中。そう、このページもそのオマージュです。","ev_s":"学歴と、ターミナル。<code>stack</code> と入力してみて。","rap_h":"前科記録","end":"ファイル終わり · 連絡先は近日公開","pick":"配置中：{n}。マスをタップ。","nopick":"容疑者未選択：タップでマスに×。","seated":"{n} / 6 着席","packet":"そのテーブルは取られています。誰も座れません。","furn":"{n}：座れません。","clash":"2人が同じ行か列にいます。1列に1人まで。","more":"{n} / 6 着席。その調子。","one":"アイヨー、惜しい：1人だけ席が違います。","many":"Ach nein：{n}人の席が違います。","solved":"Shiok！Wunderbar！Lovely！見つけた。DOWNを押してね。","focus":"つくったもの","outcome":"証拠","seen":"目撃場所","lpacket":"ティッシュ","pal_ph":"言語かページを入力…","pal_lang":"言語","pal_go":"移動","zones":{"K":"コピ","C":"チキンライス","S":"カリーヴルスト","D":"パン屋","T":"テーブル","V":"フィッシュ&チップス"},"chopez":"席取りゾーン","furnn":["ドリアン禁止の標識","コピのカップ","吊るしローストチキン","大理石のテーブル","Pfandの瓶ケース","プレッツェル屋台","ティーポット","濡れた傘","緑のスツール（座れる）"],"sus":{"L":["コピの学者","教育","学生のキャリア相談のためのデジタル学習システム。","キャリア相談の利用が<span class=\"stat\">500%</span>増加。"],"Z":["ダバオ配達人","物流","B2B SaaSを0から1へ：ルート最適化アルゴリズム、ドライバー用アプリ、API、OAuth、権限管理。","アジア太平洋<span class=\"stat\">8</span>市場に展開、売上<span class=\"stat\">3倍</span>。"],"P":["QRおばちゃん","フィンテック","バーチャルカード発行と、アジア7市場の決済。","カード返金を自動化し、手動確認を<span class=\"stat\">90%</span>削減。"],"A":["ウォレットの囁き手","決済","世界中の加盟店向けのAlipayとWeChat Pay。","Adyen初のAlipay・WeChat Pay向けプラットフォーム決済を立ち上げ、グローバル売上成長に<span class=\"stat\">約2%</span>貢献。"],"R":["給与の修理屋","HRテック","80か国以上の給与計算。","給与処理を<span class=\"stat\">2週間</span>から<span class=\"stat\">20分</span>に短縮。"],"C":["AIチームメイト","決済 × AI","データをインサイトに変えるAI分析レイヤー。","月間アクティブ加盟店が<span class=\"stat\">50%</span>から<span class=\"stat\">75%</span>に。"]},"dt_like":"弱点","likes":"お寿司とスープ。","tw_pre":"","tw_words":["決済","AI","給与","物流","フィンテック"],"tw_suf":"のプロダクトをつくっています","hp_t":"遊び方","hp1":"容疑者を選ぶ","hp2":"座らせる。各行・各列に1人ずつ。","hp3":"ティッシュと同じエリアに1人だけ？それが今の私。","hp_note":"隣 = 真左・真右・真上・真下。スツールには座れるけど、ほかの物の上はダメ。","hp_ok":"わかった","hp_btn":"遊び方","taken":"その行か列にはもう誰かいます。1列に1人まで。","map_s_t":"6人全員を座らせよう。"}};
+</script>
+<script>
+(function(){
+  const ZONES=["KKKCCC","KKTTCC","STTTTD","SSTTDD","SSVVDD","SVVVVD"];
+  const ZINFO={K:["Kopi","SG"],C:["Chicken Rice","SG"],S:["Currywurst","DE"],D:["Bäckerei","DE"],T:["Tables","chope zone"],V:["Chippy","UK"]};
+  const PACKET=[2,3];
+  const COLS="ABCDEF";
+  const SUSPECTS=[
+    {id:"L",tags:["UX research", "LMS"],code:"KS",alias:"The Kopi Scholar",bg:"#d3bea2",fg:"#151515",zone:"K",co:"NUS",ind:"Education",dates:"2017 – 2020",
+     focus:"A digital learning system for students’ career coaching.",out:'Coaching engagement up <span class="stat">500%</span>.'},
+    {id:"Z",tags:["B2B SaaS", "routing algos", "OAuth", "RBAC", "REST APIs"],code:"DD",alias:"The Dabao Dispatcher",bg:"#d8bd5e",fg:"#151515",zone:"C",co:"Zyllem",ind:"Logistics",dates:"2020 – 2022",
+     focus:"Logistics software: routing, driver apps and delivery tracking.",out:'Scaled to <span class="stat">8</span> APAC markets and <span class="stat">3x</span> revenue.'},
+    {id:"P",tags:["card issuing", "QR", "open banking"],code:"QR",alias:"The QR Auntie",bg:"#cf8a72",fg:"#151515",zone:"S",co:"Pace",ind:"Fintech",dates:"2022 – 2023",
+     focus:"Payments across 7 Asian markets, from QR to buy-now-pay-later.",out:'Transaction costs down <span class="stat">30%</span>.'},
+    {id:"A",tags:["Alipay", "WeChat Pay", "platforms"],code:"WW",alias:"The Wallet Whisperer",bg:"#9db083",fg:"#151515",zone:"D",co:"Adyen",ind:"Payments",dates:"2023 – 2024",
+     focus:"Alipay and WeChat Pay for merchants worldwide.",out:'Launched Adyen\u2019s first platform payments for Alipay and WeChat Pay, adding <span class="stat">~2%</span> to global revenue growth.'},
+    {id:"R",tags:["payroll engine", "integrations", "AI doc parsing"],code:"PF",alias:"The Payroll Fixer",bg:"#6f88a6",fg:"#f6f5f1",zone:"V",co:"Remote",ind:"HR tech",dates:"2024 – 2026",
+     focus:"Payroll across 80+ countries.",out:'Onboarding cut from <span class="stat">8 weeks</span> to under <span class="stat">30 min</span>.'},
+    {id:"C",tags:["LLMs", "evals", "analytics"],code:"AI",alias:"The AI Teammate",bg:"#151515",fg:"#f6f5f1",zone:"T",co:"Primer",ind:"Payments × AI",dates:"2026 – now",
+     focus:"An AI teammate that turns merchants’ payment data into advice.",out:'Monthly active merchants up from <span class="stat">50%</span> to <span class="stat">75%</span>.'}
+  ];
+  const SOLUTION={L:[0,1],Z:[1,5],C:[2,2],P:[3,0],A:[4,4],R:[5,3]};
+  const byId=Object.fromEntries(SUSPECTS.map(s=>[s.id,s]));
+  let lang="en";try{const sv=localStorage.getItem("jlang");if(sv&&I18N[sv])lang=sv}catch(e){}
+  const L=()=>I18N[lang];
+  const t=(k,n)=>{const v=L()[k]!==undefined?L()[k]:I18N.en[k];return n!==undefined?String(v).split("{n}").join(n):v};
+  const zn=z=>L().zones[z];
+  const ztag=z=>z==="T"?L().chopez:ZINFO[z][1];
+  const sx=(s,i,d)=>((L().sus||{})[s.id]||[])[i]||d;
+  const al=s=>sx(s,0,s.alias),indus=s=>sx(s,1,s.ind),foc=s=>sx(s,2,s.focus),outc=s=>sx(s,3,s.out);
+  const fn=f=>L().furnn[f.i];
+  let isSolved=false;
+
+  const IC={
+    kopi:'<svg viewBox="0 0 40 40"><ellipse cx="13" cy="29" rx="9" ry="2.5" fill="#fff" stroke="#151515" stroke-width="1.5"/><path d="M7 16h12l-1.5 12h-9z" fill="#fff" stroke="#151515" stroke-width="1.5"/><path d="M8 18h10" stroke="#7a4a24" stroke-width="3"/><ellipse cx="28" cy="31" rx="8" ry="2.2" fill="#fff" stroke="#151515" stroke-width="1.5"/><path d="M22 19h11l-1.4 11h-8.2z" fill="#fff" stroke="#151515" stroke-width="1.5"/><path d="M23 21h9" stroke="#c99a6b" stroke-width="3"/></svg>',
+    chicken:'<svg viewBox="0 0 40 40"><path d="M4 6h32" stroke="#151515" stroke-width="2"/><path d="M13 6v6M27 6v6" stroke="#151515" stroke-width="1.5"/><ellipse cx="13" cy="21" rx="6" ry="9" fill="#e8a23a" stroke="#151515" stroke-width="1.5"/><ellipse cx="27" cy="21" rx="6" ry="9" fill="#d88a2a" stroke="#151515" stroke-width="1.5"/><path d="M10 30l-1 5M16 30l1 5M24 30l-1 5M30 30l1 5" stroke="#151515" stroke-width="1.5"/></svg>',
+    table:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="#fff" stroke="#151515" stroke-width="1.5"/><path d="M14 17q6 3 12-1M15 23q4-2 9 1" stroke="#c9c4b6" stroke-width="1" fill="none"/><circle cx="20" cy="5" r="3.5" fill="#2e8b57" stroke="#151515" stroke-width="1.3"/><circle cx="20" cy="35" r="3.5" fill="#2e8b57" stroke="#151515" stroke-width="1.3"/><circle cx="5" cy="20" r="3.5" fill="#2e8b57" stroke="#151515" stroke-width="1.3"/><circle cx="35" cy="20" r="3.5" fill="#2e8b57" stroke="#151515" stroke-width="1.3"/></svg>',
+    durian:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#fff" stroke="#c42a2f" stroke-width="3"/><circle cx="20" cy="20" r="7" fill="#b9a33a" stroke="#151515" stroke-width="1.3"/><path d="M20 10v3M20 27v3M10 20h3M27 20h3M13 13l2 2M25 25l2 2M27 13l-2 2M13 27l2-2" stroke="#151515" stroke-width="1.5"/><path d="M9.5 9.5l21 21" stroke="#c42a2f" stroke-width="3"/></svg>',
+    pfand:'<svg viewBox="0 0 40 40"><rect x="5" y="20" width="30" height="14" rx="2" fill="#3a7d44" stroke="#151515" stroke-width="1.5"/><path d="M5 26h30" stroke="#151515" stroke-width="1"/><g fill="#7a4a24" stroke="#151515" stroke-width="1.2"><rect x="9" y="9" width="5" height="13" rx="2"/><rect x="17.5" y="7" width="5" height="15" rx="2"/><rect x="26" y="10" width="5" height="12" rx="2"/></g></svg>',
+    brezel:'<svg viewBox="0 0 40 40"><path d="M20 30C8 32 4 18 12 12s12 4 8 12M20 30c12 2 16-12 8-18s-12 4-8 12M13 26l14-8M27 26l-14-8" fill="none" stroke="#7a4214" stroke-width="4" stroke-linecap="round"/><g fill="#fff"><circle cx="11" cy="16" r=".9"/><circle cx="28" cy="15" r=".9"/><circle cx="20" cy="29" r=".9"/></g></svg>',
+    phone:'<svg viewBox="0 0 40 40"><rect x="11" y="4" width="18" height="33" rx="2" fill="#c8102e" stroke="#151515" stroke-width="1.5"/><path d="M11 9h18" stroke="#151515" stroke-width="1.2"/><g fill="#fdf6d8" stroke="#151515" stroke-width="1"><rect x="14" y="12" width="5" height="5"/><rect x="21" y="12" width="5" height="5"/><rect x="14" y="19" width="5" height="5"/><rect x="21" y="19" width="5" height="5"/></g></svg>',
+    brolly:'<svg viewBox="0 0 40 40"><path d="M5 20a15 13 0 0 1 30 0z" fill="#1d3b6b" stroke="#151515" stroke-width="1.5"/><path d="M20 20v12a3 3 0 0 1-6 0" fill="none" stroke="#151515" stroke-width="2"/><g stroke="#4a8fd9" stroke-width="1.6" stroke-linecap="round"><path d="M8 26l-1 3M30 25l-1 3M33 31l-1 3"/></g></svg>'
+  };
+  IC.teapot='<svg viewBox="0 0 40 40"><path d="M10 18h20v8a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z" fill="#f3efe6" stroke="#151515" stroke-width="1.5"/><path d="M30 20q6 0 5 5t-5 4" fill="none" stroke="#151515" stroke-width="1.5"/><path d="M10 21q-5-1-6-6" fill="none" stroke="#151515" stroke-width="1.6" stroke-linecap="round"/><path d="M11 18q9-7 18 0" fill="#b9c8d6" stroke="#151515" stroke-width="1.5"/><circle cx="20" cy="12" r="1.8" fill="#151515"/><path d="M12 26h16" stroke="#7a9bb8" stroke-width="2"/></svg>';
+  const FURN={
+    "0,0":{i:0,n:"No durians sign",k:"durian",c:"SG"},
+    "1,0":{i:1,n:"Kopi cups",k:"kopi",c:"SG"},
+    "0,5":{i:2,n:"Roast chickens",k:"chicken",c:"SG"},
+    "3,2":{i:3,n:"Marble table",k:"table",c:"SG"},
+    "4,0":{i:4,n:"Pfand crate",k:"pfand",c:"DE"},
+    "3,4":{i:5,n:"Brezel stand",k:"brezel",c:"DE"},
+    "5,4":{i:6,n:"Teapot",k:"teapot",c:"UK"},
+    "4,2":{i:7,n:"Wet brolly",k:"brolly",c:"UK"}
+  };
+  const isFurn=(r,c)=>FURN[r+","+c];
+  const STOOLS=new Set(["0,1","1,2","5,2"]);
+  const STOOL={i:8,k:"stool",c:"SG"};
+  IC.stool='<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#7fa98a" stroke="#151515" stroke-width="1.5"/><circle cx="20" cy="20" r="10" fill="none" stroke="#5f8a6b" stroke-width="1.5"/><path d="M13 14a10 10 0 0 1 8-4" fill="none" stroke="#cfe3d4" stroke-width="2" stroke-linecap="round"/></svg>';
+  const isStool=(r,c)=>STOOLS.has(r+","+c);
+  const PACKET_SVG='<svg class="packet" viewBox="0 0 48 36" aria-hidden="true"><rect x="2" y="4" width="44" height="28" rx="4" fill="#fff" stroke="#151515" stroke-width="2.5"/><path d="M12 4c2 6 6 8 12 8s10-2 12-8" fill="#eee" stroke="#151515" stroke-width="2"/><rect x="8" y="18" width="32" height="8" rx="2" fill="#b4533a"/><text x="24" y="24.6" font-size="6.2" text-anchor="middle" fill="#fff" font-family="monospace" font-weight="700">CHOPE</text></svg>';
+
+  let grid=Array.from({length:6},()=>Array(6).fill(null));
+  let picked="L";
+  const board=document.getElementById("board"),suspectsEl=document.getElementById("suspects"),statusEl=document.getElementById("status"),
+        pickhint=document.getElementById("pickhint"),countEl=document.getElementById("count");
+  const tokenHTML=s=>'<span class="token" style="background:'+s.bg+';color:'+s.fg+'">'+s.code+'</span>';
+
+  function buildBoard(){
+    board.appendChild(Object.assign(document.createElement("div"),{className:"lbl"}));
+    for(let c=0;c<6;c++)board.appendChild(Object.assign(document.createElement("div"),{className:"lbl",textContent:COLS[c]}));
+    for(let r=0;r<6;r++){
+      board.appendChild(Object.assign(document.createElement("div"),{className:"lbl",textContent:r+1}));
+      for(let c=0;c<6;c++){
+        const z=ZONES[r][c],b=document.createElement("button");
+        b.type="button";b.className="cell z-"+z;b.dataset.r=r;b.dataset.c=c;
+        if(r===0||ZONES[r-1][c]!==z)b.classList.add("bt");
+        if(r===5||ZONES[r+1][c]!==z)b.classList.add("bb");
+        if(c===0||ZONES[r][c-1]!==z)b.classList.add("bl");
+        if(c===5||ZONES[r][c+1]!==z)b.classList.add("br");
+        if(r===PACKET[0]&&c===PACKET[1])b.classList.add("packetcell");
+        if(isFurn(r,c))b.classList.add("furncell");
+        b.addEventListener("click",()=>onCell(r,c));
+        board.appendChild(b);
+      }
+    }
+  }
+  const cellEl=(r,c)=>board.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
+
+  function render(){
+    const labelled={},placed={};
+    for(let r=0;r<6;r++)for(let c=0;c<6;c++){const v=grid[r][c];if(v&&v!=="x")placed[v]=[r,c]}
+    const ids=Object.keys(placed),clash=new Set();
+    ids.forEach(a=>ids.forEach(b=>{if(a<b&&(placed[a][0]===placed[b][0]||placed[a][1]===placed[b][1])){clash.add(a);clash.add(b)}}));
+    for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+      const z=ZONES[r][c],el=cellEl(r,c),v=grid[r][c];let html="";
+      if(!labelled[z]){labelled[z]=1;html+='<span class="zname">'+zn(z)+' <span class="h">'+ztag(z)+'</span></span>'}
+      if(isStool(r,c))html+=IC.stool.replace('<svg ','<svg class="stoolic" aria-hidden="true" ');
+      if(r===PACKET[0]&&c===PACKET[1])html+=PACKET_SVG;
+      else if(isFurn(r,c))html+=IC[isFurn(r,c).k].replace('<svg ','<svg class="furn" aria-hidden="true" ');
+      else if(v==="x")html+='<span class="mark">×</span>';
+      else if(v)html+=tokenHTML(byId[v]);
+      el.innerHTML=html;
+      el.classList.toggle("clash",!!(v&&v!=="x"&&clash.has(v)));
+      let label=COLS[c]+(r+1)+", "+zn(z);
+      if(r===PACKET[0]&&c===PACKET[1])label+=", tissue packet";else if(isFurn(r,c))label+=", "+fn(isFurn(r,c));
+      else if(v==="x")label+=", crossed out";else if(v)label+=", "+al(byId[v]);
+      if(isStool(r,c))label+=", "+fn(STOOL);
+      el.setAttribute("aria-label",label);
+    }
+    suspectsEl.querySelectorAll(".sbtn").forEach(btn=>{
+      btn.setAttribute("aria-pressed",picked===btn.dataset.id?"true":"false");
+      btn.classList.toggle("placed",!!placed[btn.dataset.id]);
+    });
+    pickhint.textContent=picked?t("pick",al(byId[picked])):t("nopick");
+    countEl.textContent=t("seated",ids.length);
+    return {placed,clash};
+  }
+  const say=(m,c)=>{statusEl.textContent=m;statusEl.className="status "+(c||"")};
+
+  function onCell(r,c){
+    if(r===PACKET[0]&&c===PACKET[1]){say(t("packet"),"bad");return}
+    if(isFurn(r,c)){say(t("furn",lang==="en"?fn(isFurn(r,c)).toLowerCase():fn(isFurn(r,c))),"bad");return}
+    const v=grid[r][c];
+    if(v&&v!=="x"){grid[r][c]=null;picked=v;render();return}
+    if(picked){
+      const block=[];
+      for(let i=0;i<6;i++)for(let j=0;j<6;j++){const w=grid[i][j];if(w&&w!=="x"&&w!==picked&&(i===r||j===c))block.push([i,j])}
+      if(block.length){
+        say(t("taken"),"bad");
+        block.forEach(([i,j])=>{const el=cellEl(i,j);el.classList.remove("nope");void el.offsetWidth;el.classList.add("nope")});
+        return;
+      }
+      for(let i=0;i<6;i++)for(let j=0;j<6;j++)if(grid[i][j]===picked)grid[i][j]=null;
+      grid[r][c]=picked;
+      const st=render();const next=SUSPECTS.find(s=>!st.placed[s.id]);picked=next?next.id:null;
+      const st2=render();say("");
+      if(Object.keys(st2.placed).length===6)check(true);
+      return;
+    }
+    grid[r][c]=v==="x"?null:"x";render();
+  }
+  function check(auto){
+    const {placed,clash}=render(),n=Object.keys(placed).length;
+    if(clash.size){say(t("clash"),"bad");return}
+    if(n<6){if(!auto)say(t("more",n));return}
+    const wrong=SUSPECTS.filter(s=>placed[s.id][0]!==SOLUTION[s.id][0]||placed[s.id][1]!==SOLUTION[s.id][1]).length;
+    if(wrong){say(wrong===1?t("one"):t("many",wrong),"bad");return}
+    solved();
+  }
+  function solved(){isSolved=true;say(t("solved"));paintVerdict()}
+  function paintVerdict(){
+    const v=document.getElementById("verdict");v.classList.toggle("solved",isSolved);
+    document.getElementById("vk").textContent=t(isSolved?"vk1":"vk0");
+    document.getElementById("vt").innerHTML=t(isSolved?"vt1":"vt0");
+    const f=document.getElementById("file-C");if(f)f.classList.toggle("current",isSolved);
+  }
+
+  function buildSuspects(){
+    suspectsEl.innerHTML="";
+    SUSPECTS.forEach((s,i)=>{
+      const b=document.createElement("button");b.type="button";b.className="sbtn";b.dataset.id=s.id;
+      b.innerHTML=tokenHTML(s)+'<span>'+al(s)+'</span><kbd>'+(i+1)+'</kbd>';
+      b.addEventListener("click",()=>{picked=picked===s.id?null:s.id;render()});
+      suspectsEl.appendChild(b);
+    });
+  }
+  function buildFiles(){
+    const fl=document.getElementById("filelist");fl.innerHTML="";
+    [...SUSPECTS].reverse().forEach(s=>{
+      const a=document.createElement("article");a.className="file";a.id="file-"+s.id;
+      a.innerHTML='<header>'+tokenHTML(s)+'<div><div class="alias">'+al(s)+'</div><div class="where">'+t("seen")+' '+zn(s.zone)+' · '+s.dates+'</div></div></header>'+
+        '<div class="body"><p class="co">'+s.co+'<span class="ind">'+indus(s)+'</span></p><dl class="fo"><dt>'+t("focus")+'</dt><dd>'+foc(s)+'</dd><dt>'+t("outcome")+'</dt><dd>'+outc(s)+'</dd></dl><div class="tags">'+s.tags.map(x=>'<span>'+x+'</span>').join("")+'</div></div>';
+      fl.appendChild(a);
+    });
+  }
+  function buildLegend(){
+    document.getElementById("legend").innerHTML='<span>'+PACKET_SVG.replace('class="packet"','')+t("lpacket")+'</span>'+
+      '<span>'+IC.stool+fn(STOOL)+'</span>'+Object.values(FURN).map(f=>'<span>'+IC[f.k]+fn(f)+' ('+f.c+')</span>').join("");
+  }
+  document.querySelectorAll("[data-win]").forEach(el=>{
+    const t=document.createElement("div");t.className="titlebar";t.setAttribute("aria-hidden","true");
+    t.innerHTML='<span class="dots"><i></i><i></i><i></i></span><span class="fn">'+el.dataset.win+'</span>';
+    el.prepend(t);
+  });
+
+  document.getElementById("check").addEventListener("click",()=>check(false));
+  document.getElementById("reset").addEventListener("click",()=>{grid=grid.map(r=>r.map(()=>null));picked="L";say("");render()});
+  document.getElementById("reveal").addEventListener("click",()=>{
+    grid=grid.map(r=>r.map(()=>null));Object.entries(SOLUTION).forEach(([id,[r,c]])=>grid[r][c]=id);picked=null;render();solved();
+  });
+
+  /* ---- page turning ---- */
+  const pages=[...document.querySelectorAll(".page")];
+  const rail=document.getElementById("rail"),pageno=document.getElementById("pageno"),downBtn=document.getElementById("down"),flash=document.getElementById("flash");
+  pages.forEach((p,i)=>{const a=document.createElement("a");a.href="#"+p.id;a.setAttribute("aria-label","Go to "+(p.getAttribute("aria-label")||p.querySelector("h2").textContent));rail.appendChild(a)});
+  let current=0;
+  function currentPage(){
+    const mid=window.innerHeight*0.4;let idx=0;
+    pages.forEach((p,i)=>{if(p.getBoundingClientRect().top<=mid)idx=i});return idx;
+  }
+  function update(){
+    current=currentPage();
+    pageno.textContent=current+" / "+(pages.length-1);
+    rail.querySelectorAll("a").forEach((a,i)=>a.setAttribute("aria-current",i===current?"true":"false"));
+    downBtn.textContent=current===pages.length-1?"TOP ↑":"DOWN ↓";
+  }
+  function go(i){
+    i=Math.max(0,Math.min(pages.length-1,i));
+    if(!matchMedia("(prefers-reduced-motion: reduce)").matches){flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go")}
+    pages[i].scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  downBtn.addEventListener("click",()=>go(current===pages.length-1?0:current+1));
+  window.addEventListener("scroll",update,{passive:true});
+  update();
+
+  document.addEventListener("keydown",e=>{
+    if(!document.getElementById("palback").hidden||!document.getElementById("helpback").hidden)return;
+    if(e.target.closest("input,textarea")||e.metaKey||e.ctrlKey||e.altKey)return;
+    const k=e.key;
+    if(k==="ArrowDown"||k==="PageDown"){e.preventDefault();go(current+1);return}
+    if(k==="ArrowUp"||k==="PageUp"){e.preventDefault();go(current-1);return}
+    const kl=k.toLowerCase();
+    if(kl>="1"&&kl<="6"){picked=SUSPECTS[+kl-1].id;render()}
+    else if(kl==="escape"){picked=null;render()}
+    else if(kl==="c")check(false);
+    else if(kl==="r")document.getElementById("reset").click();
+  });
+
+  /* ---- terminal ---- */
+  const CMDS={
+    help:"commands: whoami, stack, languages, eink, snack, kopi, weather, wurst, chope, solve, sudo hire jelissa, clear",
+    snack:"sushi and soup. always.",
+    stack:"ai      claude · braintrust · phoenix · lovable · replit\ndata    looker · mixpanel · metabase · sigma · omni · google analytics\ndesign  figma · framer · photoshop · illustrator · sketch\nbuild   html · css · javascript · react · angular · java · launchdarkly",
+    whoami:"jelissa: builds products in payments, payroll, logistics and AI. SG and UK, sometimes DE.",
+    languages:"english ✓  中文 ✓  deutsch (beginner)",
+    eink:"refreshing... ▓▒░ done. ghosting: minimal. battery: 6 weeks. happiness: high.",
+    kopi:"kopi-o kosong brewing... done. productivity +20%.",
+    weather:"SG: 31°C, thunderstorm at 4pm. UK: 9°C, drizzle. DE: 4°C, grey but punctual.",
+    wurst:"Currywurst mit Pommes, bitte. Cash only. The QR Auntie is not coping.",
+    chope:"tissue packet placed. table reserved until further notice.",
+    "sudo hire jelissa":"permission granted. contact details coming soon.",
+    ls:"case_files/  stack/  README.md  whoami.json  education.log",
+    pwd:"/j.oatlab.dev"
+  };
+  const out=document.getElementById("termout");
+  document.getElementById("termform").addEventListener("submit",e=>{
+    e.preventDefault();
+    const inp=document.getElementById("termin"),cmd=inp.value.trim().toLowerCase();inp.value="";
+    if(!cmd)return;
+    if(cmd==="clear"){out.innerHTML="";return}
+    let res=CMDS[cmd];
+    if(cmd==="solve"){document.getElementById("reveal").click();res="case closed. see page 3."}
+    if(res===undefined)res=cmd.split(" ")[0]+": command not found. try 'help'.";
+    const esc=t=>t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    out.innerHTML+='<span class="pr">$</span> '+esc(cmd)+'\n'+esc(res)+'\n';out.scrollTop=out.scrollHeight;
+  });
+
+  /* ---- language ---- */
+  const HTMLLANG={en:"en",zh:"zh-Hans",zht:"zh-Hant",de:"de",ko:"ko",ja:"ja"};
+  let twTimer=null;
+  function startTW(){
+    clearTimeout(twTimer);
+    document.getElementById("twpre").textContent=L().tw_pre;document.getElementById("twsuf").textContent=L().tw_suf;
+    const el=document.getElementById("tw"),words=L().tw_words;let wi=0,ci=0,del=false;
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=words[0];return}
+    (function step(){
+      const w=words[wi];
+      if(!del){ci++;el.textContent=w.slice(0,ci);if(ci===w.length){del=true;twTimer=setTimeout(step,1600);return}}
+      else{ci--;el.textContent=w.slice(0,ci);if(ci===0){del=false;wi=(wi+1)%words.length}}
+      twTimer=setTimeout(step,del?45:95);
+    })();
+  }
+  function setLang(l){
+    lang=I18N[l]?l:"en";try{localStorage.setItem("jlang",lang)}catch(e){}
+    document.documentElement.lang=HTMLLANG[lang];
+    const touch=matchMedia("(hover: none)").matches;
+    document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.dataset.i18n;el.innerHTML=t(touch&&L()[k+"_t"]?k+"_t":k)});
+    document.querySelectorAll("[data-chap]").forEach(el=>{el.textContent=t("chap",el.dataset.chap)});
+    buildSuspects();buildFiles();buildLegend();render();paintVerdict();startTW();
+    if(statusEl.textContent&&isSolved)say(t("solved"));else say("");
+  }
+
+  /* ---- command palette ---- */
+  const palback=document.getElementById("palback"),palin=document.getElementById("palin"),pallist=document.getElementById("pallist");
+  const LALIAS={en:"english",zh:"chinese simplified mandarin zhongwen jianti",zht:"chinese traditional mandarin zhongwen fanti",de:"german deutsch",ko:"korean hangul",ja:"japanese nihongo"};
+  let palItems=[],palSel=0,palReturn=null;
+  function palData(){
+    const langs=Object.keys(I18N).map(k=>({g:t("pal_lang"),label:I18N[k]._name,hint:k.toUpperCase(),key:LALIAS[k],on:k===lang,run:()=>setLang(k)}));
+    const gos=pages.map((p,i)=>({g:t("pal_go"),label:i===0?"Jelissa":t("toc"+i+"s"),hint:"p."+i,key:"",run:()=>go(i)}));
+    return langs.concat(gos);
+  }
+  function palRender(){
+    const q=palin.value.trim().toLowerCase();
+    palItems=palData().filter(x=>!q||(x.label+" "+x.hint+" "+x.key).toLowerCase().includes(q));
+    palSel=Math.max(0,Math.min(palSel,palItems.length-1));
+    let html="",g="";
+    palItems.forEach((x,i)=>{
+      if(x.g!==g){g=x.g;html+='<li class="pal-group" role="presentation">'+g+'</li>'}
+      html+='<li class="pal-item" role="option" data-i="'+i+'" aria-selected="'+(i===palSel)+'"><span>'+x.label+(x.on?' <span class="on">●</span>':'')+'</span><small>'+x.hint+'</small></li>';
+    });
+    pallist.innerHTML=html||'<li class="pal-group">—</li>';
+    const sel=pallist.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:"nearest"});
+  }
+  function openPal(){palReturn=document.activeElement;palback.hidden=false;palin.value="";palin.placeholder=t("pal_ph");palSel=Object.keys(I18N).indexOf(lang);palRender();palin.focus()}
+  function closePal(){palback.hidden=true;if(palReturn&&palReturn.focus)palReturn.focus()}
+  function runPal(i){const x=palItems[i];if(!x)return;closePal();x.run()}
+  palin.addEventListener("input",()=>{palSel=0;palRender()});
+  palin.addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"){e.preventDefault();palSel=Math.min(palItems.length-1,palSel+1);palRender()}
+    else if(e.key==="ArrowUp"){e.preventDefault();palSel=Math.max(0,palSel-1);palRender()}
+    else if(e.key==="Enter"){e.preventDefault();runPal(palSel)}
+    else if(e.key==="Escape"){e.preventDefault();closePal()}
+  });
+  pallist.addEventListener("click",e=>{const li=e.target.closest(".pal-item");if(li)runPal(+li.dataset.i)});
+  palback.addEventListener("click",e=>{if(e.target===palback)closePal()});
+  document.querySelectorAll("[data-open-palette]").forEach(b=>b.addEventListener("click",openPal));
+  document.addEventListener("keydown",e=>{
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();e.stopImmediatePropagation();palback.hidden?openPal():closePal()}
+  },true);
+
+  /* ---- how to play pop-up ---- */
+  const helpback=document.getElementById("helpback");let helpReturn=null,helpShown=false;
+  function openHelp(){helpShown=true;helpReturn=document.activeElement;helpback.hidden=false;document.getElementById("helpok").focus()}
+  function closeHelp(){helpback.hidden=true;if(helpReturn&&helpReturn.focus)helpReturn.focus()}
+  document.querySelectorAll("[data-help]").forEach(b=>b.addEventListener("click",openHelp));
+  document.getElementById("helpok").addEventListener("click",closeHelp);
+  helpback.addEventListener("click",e=>{if(e.target===helpback)closeHelp()});
+  helpback.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();closeHelp()}});
+  window.addEventListener("scroll",()=>{if(!helpShown&&!isSolved&&currentPage()===2){helpShown=true;setTimeout(()=>{if(currentPage()===2)openHelp()},450)}},{passive:true});
+
+  buildBoard();setLang(lang);
+})();
+</script>
+</body>
+</html>
